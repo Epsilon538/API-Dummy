@@ -77,125 +77,397 @@ ESTADOS_OT = [
     "enviada_cobranza",
 ]
 
-# Zonas reales de Santiago de Chile
-ZONAS_SANTIAGO = [
-    "Santiago Centro",
-    "Providencia",
-    "Las Condes",
-    "Vitacura",
-    "Nunoa",
-    "La Florida",
-    "Maipu",
-    "Pudahuel",
-    "Quilicura",
-    "Penalolen",
-    "La Reina",
-    "Macul",
-    "San Miguel",
-    "La Cisterna",
-    "El Bosque",
-    "Puente Alto",
-    "San Bernardo",
-    "Lo Barnechea",
-    "Cerrillos",
-    "Estacion Central",
-]
+# =============================================================================
+# DATOS GEOGRAFICOS: TODAS LAS REGIONES DE CHILE
+# Estructura: ciudad -> {"zonas": [...], "calles": [...]}
+# =============================================================================
 
-# Calles reales de Santiago para direcciones mas autenticas
-CALLES_SANTIAGO = [
-    "Avenida Libertador Bernardo O Higgins",
-    "Avenida Providencia",
-    "Avenida Apoquindo",
-    "Avenida Vitacura",
-    "Avenida Las Condes",
-    "Calle Huerfanos",
-    "Calle Agustinas",
-    "Avenida Irarrazaval",
-    "Avenida Grecia",
-    "Calle Merced",
-    "Paseo Ahumada",
-    "Avenida Americo Vespucio",
-    "Avenida Tobalaba",
-    "Avenida Vicuna Mackenna",
-    "Avenida Recoleta",
-    "Calle San Antonio",
-    "Avenida Matta",
-    "Calle Condell",
-    "Avenida El Golf",
-    "Calle Estado",
-]
+CIUDADES_CHILE = {
+    # -------------------------------------------------------------------------
+    # Region de Arica y Parinacota (XV)
+    # -------------------------------------------------------------------------
+    "Arica": {
+        "zonas": [
+            "Arica Centro", "El Morro", "Las Mayorazas", "Poblacion Chinchorro",
+            "Cerro Chuño", "Diego Portales", "La Chimba", "Las Maitas",
+            "Poblacion Santa Ana", "Las Lomas",
+        ],
+        "calles": [
+            "Avenida General Velasquez", "Calle 21 de Mayo", "Avenida Comandante San Martin",
+            "Calle Maximo Lira", "Avenida Los Industriales", "Calle Patricio Lynch",
+            "Avenida Diego Portales", "Calle Colón", "Avenida Chacabuco",
+            "Calle Sotomayor",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Tarapaca (I)
+    # -------------------------------------------------------------------------
+    "Iquique": {
+        "zonas": [
+            "Iquique Centro", "Alto Hospicio", "La Puntilla", "Cavancha",
+            "Playa Brava", "El Colorado", "Barrio Industrial", "Laguna Verde",
+            "Poblacion Los Caiques", "Bajo Molle",
+        ],
+        "calles": [
+            "Avenida Arturo Prat", "Calle Baquedano", "Avenida Hector Arancibia Lazo",
+            "Calle Bolivar", "Avenida Tarapaca", "Calle Barros Arana",
+            "Avenida 11 de Septiembre", "Calle Obispo Labbe", "Avenida Circunvalacion",
+            "Calle Patricio Lynch",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Antofagasta (II)
+    # -------------------------------------------------------------------------
+    "Antofagasta": {
+        "zonas": [
+            "Antofagasta Centro", "La Chimba", "Jardines del Sur", "Pedro de Valdivia",
+            "Bonilla", "Coloso", "El Salar", "Huanchaca",
+            "Barrio Industrial", "Las Flores",
+        ],
+        "calles": [
+            "Avenida Balmaceda", "Calle Prat", "Avenida Argentina",
+            "Calle Manuel Antonio Matta", "Avenida Pedro Aguirre Cerda",
+            "Calle Condell", "Avenida O Higgins", "Calle Bolivar",
+            "Avenida Granaderos", "Calle Sotomayor",
+        ],
+    },
+    "Calama": {
+        "zonas": [
+            "Calama Centro", "El Loa", "Villa Ayquina", "Barrio Oriente",
+            "Tres Poniente", "Barrio Estadio", "Sector Industrial", "Las Rosas",
+            "Balmaceda", "Villa Independencia",
+        ],
+        "calles": [
+            "Avenida Balmaceda", "Calle Cobija", "Avenida Granaderos",
+            "Calle Ramirez", "Avenida Abaroa", "Calle Latorre",
+            "Avenida Republica", "Calle Espinoza", "Avenida O Higgins",
+            "Calle Atacama",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Atacama (III)
+    # -------------------------------------------------------------------------
+    "Copiapo": {
+        "zonas": [
+            "Copiapo Centro", "Los Carrera", "Barrio Universitario", "El Palomar",
+            "La Chimba", "Villa Porvenir", "Sector Norte", "Barrio Industrial",
+            "Poblacion Atacama", "Los Castaños",
+        ],
+        "calles": [
+            "Avenida Copayapu", "Calle Chacabuco", "Avenida O Higgins",
+            "Calle Atacama", "Avenida Los Carrera", "Calle Colipí",
+            "Avenida Yerbas Buenas", "Calle Juan Martinez", "Avenida Freire",
+            "Calle Infante",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Coquimbo (IV)
+    # -------------------------------------------------------------------------
+    "La Serena": {
+        "zonas": [
+            "La Serena Centro", "Las Compañias", "El Milagro", "Tierras Blancas",
+            "La Antena", "Bello Horizonte", "Los Jardines", "Balneario",
+            "Crucecita", "Av del Mar",
+        ],
+        "calles": [
+            "Avenida Francisco de Aguirre", "Calle Balmaceda", "Avenida del Mar",
+            "Calle O Higgins", "Avenida Cisternas", "Calle Brasil",
+            "Avenida Los Carrera", "Calle Edwards", "Avenida Juan de Dios Peni",
+            "Calle Colo Colo",
+        ],
+    },
+    "Coquimbo": {
+        "zonas": [
+            "Coquimbo Centro", "La Herradura", "El Barco", "La Chimba",
+            "Barrio Industrial", "Guanaqueros", "Tongoy", "Las Lilas",
+            "Marquesa", "Tierras Blancas",
+        ],
+        "calles": [
+            "Avenida Costanera", "Calle Aldunate", "Avenida Eduardo de la Barra",
+            "Calle Melgarejo", "Avenida Varela", "Calle Bilbao",
+            "Avenida Videla", "Calle Larrondo", "Avenida 3 Oriente",
+            "Calle Alcalde",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Valparaiso (V)
+    # -------------------------------------------------------------------------
+    "Valparaiso": {
+        "zonas": [
+            "Valparaiso Centro", "Cerro Alegre", "Cerro Concepcion", "Cerro Bellavista",
+            "Cerro Placeres", "Cerro Baron", "El Plan", "Barrio Puerto",
+            "Playa Ancha", "Las Cañas",
+        ],
+        "calles": [
+            "Avenida Argentina", "Calle Condell", "Avenida Errazuriz",
+            "Calle Blanco", "Avenida Pedro Montt", "Calle Prat",
+            "Avenida Brasil", "Calle Serrano", "Avenida Independencia",
+            "Calle Cochrane",
+        ],
+    },
+    "Vina del Mar": {
+        "zonas": [
+            "Vina del Mar Centro", "Recreo", "Reaca", "Miraflores",
+            "Forestal", "Santa Ines", "El Salto", "Gomez Carreno",
+            "Achupallas", "Las Palmas",
+        ],
+        "calles": [
+            "Avenida Libertad", "Avenida Valparaiso", "Avenida Marina",
+            "Calle Arlegui", "Calle Quillota", "Avenida Jorge Montt",
+            "Avenida San Martin", "Calle Ecuador", "Avenida Espana",
+            "Calle Von Schroeders",
+        ],
+    },
+    "San Antonio": {
+        "zonas": [
+            "San Antonio Centro", "Barrancas", "El Yeco", "Llolleo",
+            "Santo Domingo", "Cartagena", "Las Cruces", "El Tabo",
+            "El Quisco", "Rocas de Santo Domingo",
+        ],
+        "calles": [
+            "Avenida Barros Luco", "Calle Centenario", "Avenida O Higgins",
+            "Calle Ramirez", "Avenida Los Leones", "Calle Miraflores",
+            "Avenida Constitucion", "Calle David Fuentes", "Avenida Las Delicias",
+            "Calle Balmaceda",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region Metropolitana de Santiago (XIII)
+    # -------------------------------------------------------------------------
+    "Santiago": {
+        "zonas": [
+            "Santiago Centro", "Providencia", "Las Condes", "Vitacura",
+            "Nunoa", "La Florida", "Maipu", "Pudahuel",
+            "Quilicura", "Penalolen", "La Reina", "Macul",
+            "San Miguel", "Puente Alto", "San Bernardo", "Estacion Central",
+        ],
+        "calles": [
+            "Avenida Libertador Bernardo O Higgins", "Avenida Providencia",
+            "Avenida Apoquindo", "Avenida Vitacura", "Avenida Las Condes",
+            "Calle Huerfanos", "Calle Agustinas", "Avenida Irarrazaval",
+            "Avenida Grecia", "Paseo Ahumada", "Avenida Americo Vespucio",
+            "Avenida Tobalaba", "Avenida Vicuna Mackenna", "Avenida Recoleta",
+            "Avenida Matta", "Calle Estado",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region del Libertador General Bernardo O Higgins (VI)
+    # -------------------------------------------------------------------------
+    "Rancagua": {
+        "zonas": [
+            "Rancagua Centro", "Barrio Comercial", "Machalí", "Graneros",
+            "Requinoa", "Villa Las Lilas", "Sector Norte", "Barrio Estadio",
+            "Los Libertadores", "La Grana",
+        ],
+        "calles": [
+            "Avenida Libertador Bernardo O Higgins", "Calle Campos",
+            "Avenida Cachapoal", "Calle Cuevas", "Avenida Brasil",
+            "Calle Independencia", "Avenida San Martin", "Calle Astorga",
+            "Avenida Millán", "Calle Freire",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region del Maule (VII)
+    # -------------------------------------------------------------------------
+    "Talca": {
+        "zonas": [
+            "Talca Centro", "Villa Galilea", "Panguilemo", "Los Aromos",
+            "Barrio El Rosario", "Parque Italia", "Juan Bohon", "Barrio Independencia",
+            "Sector Norte", "Villa Huamachuco",
+        ],
+        "calles": [
+            "Avenida San Miguel", "Calle 1 Sur", "Avenida Circunvalacion",
+            "Calle 2 Norte", "Avenida Lircay", "Calle Oriente",
+            "Avenida O Higgins", "Calle Poniente", "Avenida Los Heroes",
+            "Calle Uno Oriente",
+        ],
+    },
+    "Curico": {
+        "zonas": [
+            "Curico Centro", "Villa Frei", "Los Niches", "Estadio",
+            "Barrio Independencia", "San Francisco", "Mercado", "Los Boldos",
+            "Villa Prat", "Sector Industrial",
+        ],
+        "calles": [
+            "Avenida Manso de Velasco", "Calle Merced", "Avenida O Higgins",
+            "Calle Yungay", "Avenida Estado", "Calle Carmen",
+            "Avenida Camilo Henriquez", "Calle Rodriguez", "Avenida Constitucion",
+            "Calle Chacabuco",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region del Bio Bio (VIII)
+    # -------------------------------------------------------------------------
+    "Concepcion": {
+        "zonas": [
+            "Concepcion Centro", "Barrio Universitario", "Pedro de Valdivia",
+            "San Pedro de la Paz", "Talcahuano", "Hualpen", "Chiguayante",
+            "Penco", "Barrio Lorenzo", "Las Golondrinas",
+        ],
+        "calles": [
+            "Avenida O Higgins", "Calle Barros Arana", "Avenida Paicavi",
+            "Calle Caupolican", "Avenida Chacabuco", "Calle Freire",
+            "Avenida Roosevelt", "Calle Serrano", "Avenida Arturo Prat",
+            "Calle Orompello",
+        ],
+    },
+    "Los Angeles": {
+        "zonas": [
+            "Los Angeles Centro", "Barrio Industrial", "Villa Esperanza",
+            "Sector Norte", "Balmaceda", "Villa Los Pinos", "Los Alamos",
+            "Barrio Estadio", "El Mirador", "San Carlos",
+        ],
+        "calles": [
+            "Avenida Ricardo Vicuna", "Calle Valdivia", "Avenida O Higgins",
+            "Calle Villagra", "Avenida Alemania", "Calle Caupolican",
+            "Avenida El Condor", "Calle Ercilla", "Avenida Caupolicán",
+            "Calle Colon",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Nuble (XVI)
+    # -------------------------------------------------------------------------
+    "Chillan": {
+        "zonas": [
+            "Chillan Centro", "Villa Las Americas", "Barrio Industrial",
+            "El Paradero", "San Ignacio", "Villa Bicentenario", "Las Mariposas",
+            "Sector Sur", "Barrio Universidad", "Santa Amalia",
+        ],
+        "calles": [
+            "Avenida Constitucion", "Calle El Roble", "Avenida O Higgins",
+            "Calle Arauco", "Avenida Argentina", "Calle Libertad",
+            "Avenida Arturo Prat", "Calle Maipo", "Avenida 18 de Septiembre",
+            "Calle Cochrane",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de La Araucania (IX)
+    # -------------------------------------------------------------------------
+    "Temuco": {
+        "zonas": [
+            "Temuco Centro", "Labranza", "Padre las Casas", "Vilcun",
+            "Barrio Estadio", "San Sebastian", "Villa San Martin", "Cajón",
+            "Las Quilas", "Miraflores",
+        ],
+        "calles": [
+            "Avenida Balmaceda", "Calle Caupolican", "Avenida Alemania",
+            "Calle Claro Solar", "Avenida Barros Arana", "Calle Lynch",
+            "Avenida Rudecindo Ortega", "Calle Prat", "Avenida Pablo Neruda",
+            "Calle Montt",
+        ],
+    },
+    "Villarrica": {
+        "zonas": [
+            "Villarrica Centro", "Pucón", "Barrio Lago", "El Esfuerzo",
+            "Villa Progreso", "Sector Costero", "Las Vertientes", "Los Riscos",
+            "Barrio Turístico", "Las Rosas",
+        ],
+        "calles": [
+            "Avenida General Korner", "Calle Henríquez", "Avenida Anfión Muñoz",
+            "Calle Camilo Henriquez", "Avenida Pedro de Valdivia", "Calle Letelier",
+            "Avenida Los Ríos", "Calle Bilbao", "Avenida Brasil",
+            "Calle Arauco",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Los Rios (XIV)
+    # -------------------------------------------------------------------------
+    "Valdivia": {
+        "zonas": [
+            "Valdivia Centro", "Isla Teja", "Las Ánimas", "General Lagos",
+            "Barrio Experimental", "Miraflores", "Los Molinos", "Villa Collico",
+            "Corvi", "Barrio Universitario",
+        ],
+        "calles": [
+            "Avenida Ramón Picarte", "Calle Camilo Henriquez", "Avenida Alemania",
+            "Calle General Lagos", "Avenida Errázuriz", "Calle Arauco",
+            "Avenida Arturo Prat", "Calle Esmeralda", "Avenida Los Carrera",
+            "Calle Beauchef",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Los Lagos (X)
+    # -------------------------------------------------------------------------
+    "Puerto Montt": {
+        "zonas": [
+            "Puerto Montt Centro", "Alerce", "Pelluco", "La Paloma",
+            "Barrio Industrial", "Vista al Mar", "El Tepual", "Mirasol",
+            "Barrio Angelmó", "Villa Petrohue",
+        ],
+        "calles": [
+            "Avenida Diego Portales", "Calle Urmeneta", "Avenida Presidente Ibáñez",
+            "Calle San Martin", "Avenida Juan Soler Manfredini", "Calle Talca",
+            "Avenida Guillermo Gallardo", "Calle Benavente", "Avenida Varas",
+            "Calle Copiapó",
+        ],
+    },
+    "Osorno": {
+        "zonas": [
+            "Osorno Centro", "Rahue", "Villa Edén", "Barrio Universitario",
+            "Las Quemas", "Villa Los Notros", "Sector Norte", "Los Lirios",
+            "Barrio Industrial", "La Aguada",
+        ],
+        "calles": [
+            "Avenida Bustamante", "Calle Mackenna", "Avenida Bilbao",
+            "Calle Freire", "Avenida O Higgins", "Calle Prat",
+            "Avenida Matta", "Calle Angulo", "Avenida Los Carrera",
+            "Calle Cochrane",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Aysen del Gral. Carlos Ibanez del Campo (XI)
+    # -------------------------------------------------------------------------
+    "Coyhaique": {
+        "zonas": [
+            "Coyhaique Centro", "Villa Ortega", "Barrio Industrial", "El Claro",
+            "Las Rosas", "Villa Los Ñadis", "Sector Sur", "Balmaceda",
+            "Los Pinos", "Barrio Estadio",
+        ],
+        "calles": [
+            "Avenida General Parra", "Calle Balmaceda", "Avenida Simpson",
+            "Calle Condell", "Avenida Cochrane", "Calle Arturo Prat",
+            "Avenida Ogana", "Calle Moraleda", "Avenida 12 de Octubre",
+            "Calle Bilbao",
+        ],
+    },
+    # -------------------------------------------------------------------------
+    # Region de Magallanes y de la Antartica Chilena (XII)
+    # -------------------------------------------------------------------------
+    "Punta Arenas": {
+        "zonas": [
+            "Punta Arenas Centro", "Barrio Industrial", "Villa Las Nieves",
+            "Sector Norte", "Puerto Hambre", "Los Flamencos", "Villa Nordenskjöld",
+            "Barrio Croacia", "Los Glaciares", "El Arrayán",
+        ],
+        "calles": [
+            "Avenida Colon", "Calle Bories", "Avenida Bulnes",
+            "Calle Magallanes", "Avenida Independencia", "Calle Errázuriz",
+            "Avenida España", "Calle Chiloé", "Avenida Fagnano",
+            "Calle O Higgins",
+        ],
+    },
+}
 
-# Zonas reales de Vina del Mar
-ZONAS_VINA = [
-    "Vina del Mar Centro",
-    "Recreo",
-    "Reaca",
-    "Miraflores",
-    "Forestal",
-    "Santa Ines",
-    "El Salto",
-    "Gomez Carreno",
-    "Las Zorras",
-    "Achupallas",
-    "Villa Independencia",
-    "Gómez Carreño",
-    "Chorrillos",
-    "Agua Santa",
-    "Rodelillo",
-    "El Olivar",
-    "Barrio El Golf",
-    "Los Jardines",
-    "Paso Hondo",
-    "Las Palmas",
-]
-
-# Calles reales de Vina del Mar
-CALLES_VINA = [
-    "Avenida Libertad",
-    "Avenida Valparaiso",
-    "Avenida Marina",
-    "Avenida Peru",
-    "Calle Arlegui",
-    "Calle Quillota",
-    "Avenida Jorge Montt",
-    "Calle Viana",
-    "Avenida San Martin",
-    "Calle Ecuador",
-    "Calle Alvares",
-    "Avenida Espana",
-    "Calle 1 Norte",
-    "Calle 2 Norte",
-    "Calle 3 Norte",
-    "Avenida Pontigo",
-    "Calle Agua Santa",
-    "Avenida Las Palmas",
-    "Pasaje Los Aromos",
-    "Calle Von Schroeders",
-]
+# Lista plana de todas las ciudades para seleccion aleatoria
+_LISTA_CIUDADES = list(CIUDADES_CHILE.keys())
 
 
 def generar_direccion() -> str:
     """
-    Genera una direccion ficticia contextualizada aleatoriamente en
-    Santiago o Vina del Mar, Chile.
+    Genera una direccion ficticia contextualizada en una ciudad aleatoria
+    de cualquiera de las 16 regiones de Chile.
     """
+    ciudad = random.choice(_LISTA_CIUDADES)
+    datos = CIUDADES_CHILE[ciudad]
+    calle = random.choice(datos["calles"])
+    zona = random.choice(datos["zonas"])
     numero = random.randint(100, 9999)
     piso_o_depto = ""
     if random.random() > 0.5:
         tipo = random.choice(["Depto", "Of", "Piso"])
         num = random.randint(1, 20)
         piso_o_depto = f", {tipo}. {num}"
-
-    if random.random() < 0.5:
-        # Direccion en Santiago
-        calle = random.choice(CALLES_SANTIAGO)
-        zona = random.choice(ZONAS_SANTIAGO)
-        return f"{calle} #{numero}{piso_o_depto}, {zona}, Santiago"
-    else:
-        # Direccion en Vina del Mar
-        calle = random.choice(CALLES_VINA)
-        zona = random.choice(ZONAS_VINA)
-        return f"{calle} #{numero}{piso_o_depto}, {zona}, Vina del Mar"
+    return f"{calle} #{numero}{piso_o_depto}, {zona}, {ciudad}"
 
 
 # =============================================================================
