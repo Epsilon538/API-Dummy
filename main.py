@@ -125,18 +125,77 @@ CALLES_SANTIAGO = [
     "Calle Estado",
 ]
 
+# Zonas reales de Vina del Mar
+ZONAS_VINA = [
+    "Vina del Mar Centro",
+    "Recreo",
+    "Reaca",
+    "Miraflores",
+    "Forestal",
+    "Santa Ines",
+    "El Salto",
+    "Gomez Carreno",
+    "Las Zorras",
+    "Achupallas",
+    "Villa Independencia",
+    "Gómez Carreño",
+    "Chorrillos",
+    "Agua Santa",
+    "Rodelillo",
+    "El Olivar",
+    "Barrio El Golf",
+    "Los Jardines",
+    "Paso Hondo",
+    "Las Palmas",
+]
 
-def generar_direccion_santiago() -> str:
-    """Genera una direccion ficticia pero contextualizada en Santiago, Chile."""
-    calle = random.choice(CALLES_SANTIAGO)
+# Calles reales de Vina del Mar
+CALLES_VINA = [
+    "Avenida Libertad",
+    "Avenida Valparaiso",
+    "Avenida Marina",
+    "Avenida Peru",
+    "Calle Arlegui",
+    "Calle Quillota",
+    "Avenida Jorge Montt",
+    "Calle Viana",
+    "Avenida San Martin",
+    "Calle Ecuador",
+    "Calle Alvares",
+    "Avenida Espana",
+    "Calle 1 Norte",
+    "Calle 2 Norte",
+    "Calle 3 Norte",
+    "Avenida Pontigo",
+    "Calle Agua Santa",
+    "Avenida Las Palmas",
+    "Pasaje Los Aromos",
+    "Calle Von Schroeders",
+]
+
+
+def generar_direccion() -> str:
+    """
+    Genera una direccion ficticia contextualizada aleatoriamente en
+    Santiago o Vina del Mar, Chile.
+    """
     numero = random.randint(100, 9999)
     piso_o_depto = ""
     if random.random() > 0.5:
         tipo = random.choice(["Depto", "Of", "Piso"])
         num = random.randint(1, 20)
         piso_o_depto = f", {tipo}. {num}"
-    zona = random.choice(ZONAS_SANTIAGO)
-    return f"{calle} #{numero}{piso_o_depto}, {zona}, Santiago"
+
+    if random.random() < 0.5:
+        # Direccion en Santiago
+        calle = random.choice(CALLES_SANTIAGO)
+        zona = random.choice(ZONAS_SANTIAGO)
+        return f"{calle} #{numero}{piso_o_depto}, {zona}, Santiago"
+    else:
+        # Direccion en Vina del Mar
+        calle = random.choice(CALLES_VINA)
+        zona = random.choice(ZONAS_VINA)
+        return f"{calle} #{numero}{piso_o_depto}, {zona}, Vina del Mar"
 
 
 # =============================================================================
@@ -247,7 +306,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 50) -> list:
             "tipo": random.choice(TIPOS_OT),
             "estado": estado,
             "tecnico_id": random.choice(ids_tecnicos) if tiene_tecnico else None,
-            "direccion_instalacion": generar_direccion_santiago(),
+            "direccion_instalacion": generar_direccion(),
             "fecha_programada": fecha_programada,
             "hora_programada": hora_programada,
         }
