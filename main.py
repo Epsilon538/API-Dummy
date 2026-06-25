@@ -142,13 +142,14 @@ def generar_tecnicos(n: int = 20) -> list:
     return tecnicos
 
 
-def generar_disponibilidades(tecnicos: list, dias: int = 14) -> list:
+def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibilidad: int = 3) -> list:
     """
     Genera disponibilidades para cada tecnico en un rango de dias.
 
     Args:
         tecnicos: Lista de tecnicos existentes.
         dias: Cuantos dias hacia adelante generar disponibilidad.
+        max_sin_disponibilidad: Maximo de tecnicos que pueden no tener ningun dia disponible.
 
     Returns:
         Lista de diccionarios representando disponibilidades.
@@ -156,25 +157,42 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14) -> list:
     disponibilidades = []
     hoy = date.today()
 
+    # Determinamos cuales tecnicos podran quedar sin disponibilidad (maximo max_sin_disponibilidad)
+    n_sin_disp = random.randint(0, max_sin_disponibilidad)
+    ids_sin_disponibilidad = set(
+        t["id"] for t in random.sample(tecnicos, n_sin_disp)
+    )
+
     for tecnico in tecnicos:
+        tecnico_sin_disp = tecnico["id"] in ids_sin_disponibilidad
         for offset in range(dias):
             fecha = hoy + timedelta(days=offset)
             # Los fines de semana tienen menor probabilidad de disponibilidad
             es_fin_de_semana = fecha.weekday() >= 5  # 5=Sabado, 6=Domingo
             prob_disponible = 0.3 if es_fin_de_semana else 0.8
 
+            # Si el tecnico esta en el grupo sin disponibilidad, siempre False
+            if tecnico_sin_disp:
+                disponible = False
+            else:
+                disponible = random.random() < prob_disponible
+                # Garantizamos que al menos el primer dia laboral sea disponible
+                # para que no quede sin ningun dia por azar
+                if not disponible and offset == 0 and not es_fin_de_semana:
+                    disponible = True
+
             disponibilidad = {
                 "id": str(uuid.uuid4()),
                 "tecnico_id": tecnico["id"],
                 "fecha": fecha.isoformat(),
-                "disponible": random.random() < prob_disponible,
+                "disponible": disponible,
             }
             disponibilidades.append(disponibilidad)
 
     return disponibilidades
 
 
-def generar_ordenes_trabajo(tecnicos: list, n: int = 50) -> list:
+def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5) -> list:
     """
     Genera una lista de ordenes de trabajo con datos ficticios.
     Algunas OTs tendran tecnico asignado, otras no, dependiendo del estado.
@@ -182,6 +200,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 50) -> list:
     Args:
         tecnicos: Lista de tecnicos para asignar aleatoriamente.
         n: Numero de ordenes de trabajo a generar.
+        max_sin_hora: Maximo de OTs que pueden tener hora_programada en null.
 
     Returns:
         Lista de diccionarios representando ordenes de trabajo.
@@ -200,6 +219,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 50) -> list:
     ordenes = []
     hoy = date.today()
     ids_tecnicos = [t["id"] for t in tecnicos]
+    sin_hora_count = 0  # Contador de OTs que ya quedaron sin hora_programada
 
     for i in range(1, n + 1):
         estado = random.choice(ESTADOS_OT)
@@ -216,6 +236,20 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 50) -> list:
             hora_h = random.randint(8, 17)
             hora_m = random.choice([0, 15, 30, 45])
             hora_programada = f"{hora_h:02d}:{hora_m:02d}"
+        else:
+            # OT sin fecha: cuenta como sin hora_programada
+            sin_hora_count += 1
+
+        # Si ya se alcanzo el maximo de OTs sin hora y esta OT tampoco tiene,
+        # forzamos una hora aunque no tenga fecha previa
+        if hora_programada is None and sin_hora_count > max_sin_hora:
+            hora_h = random.randint(8, 17)
+            hora_m = random.choice([0, 15, 30, 45])
+            hora_programada = f"{hora_h:02d}:{hora_m:02d}"
+            # Tambien asignamos una fecha si no tenia
+            if fecha_programada is None:
+                offset = random.randint(0, 14)
+                fecha_programada = (hoy + timedelta(days=offset)).isoformat()
 
         orden = {
             # Formato "OT-XXXX" con padding de ceros a la izquierda
