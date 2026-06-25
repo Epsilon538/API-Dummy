@@ -119,7 +119,7 @@ def generar_direccion() -> str:
 # GENERACION DE LA BASE DE DATOS EN MEMORIA
 # =============================================================================
 
-def generar_tecnicos(n: int = 20) -> list:
+def generar_tecnicos(n: int = 50) -> list:
     """
     Genera una lista de tecnicos con datos ficticios.
 
@@ -266,7 +266,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5,
 
 
 # Generamos los datos al arrancar la aplicacion (base de datos en memoria)
-DB_TECNICOS = generar_tecnicos(n=20)
+DB_TECNICOS = generar_tecnicos(n=50)
 DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
 DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=100)
 
