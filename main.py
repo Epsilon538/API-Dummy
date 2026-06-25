@@ -192,20 +192,11 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     return disponibilidades
 
 
-def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5) -> list:
+def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5, min_por_asignar_pct: int = 70) -> list:
     """
     Genera una lista de ordenes de trabajo con datos ficticios.
-    Algunas OTs tendran tecnico asignado, otras no, dependiendo del estado.
-
-    Args:
-        tecnicos: Lista de tecnicos para asignar aleatoriamente.
-        n: Numero de ordenes de trabajo a generar.
-        max_sin_hora: Maximo de OTs que pueden tener hora_programada en null.
-
-    Returns:
-        Lista de diccionarios representando ordenes de trabajo.
+    Garantiza que al menos el porcentaje indicado tenga el estado 'por_asignar'.
     """
-    # Estados que logicamente tienen un tecnico asignado
     estados_con_tecnico = {
         "asignacion_por_confirmar",
         "asignada",
@@ -213,16 +204,30 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5)
         "finalizada",
         "enviada_cobranza",
     }
-    # Estados que logicamente NO tienen tecnico asignado
-    estados_sin_tecnico = {"por_revisar", "por_asignar"}
-
+    
     ordenes = []
     hoy = date.today()
     ids_tecnicos = [t["id"] for t in tecnicos]
-    sin_hora_count = 0  # Contador de OTs que ya quedaron sin hora_programada
+    sin_hora_count = 0  
+
+    # --- NUEVA LÓGICA DE RESTRICCIÓN ---
+    # Calculamos cuántas OTs DEBEN ser "por_asignar" de manera obligatoria
+    cantidad_obligatoria_por_asignar = int(n * (min_por_asignar_pct / 100))
+    
+    # Creamos una lista con los estados fijos que usaremos para cada iteración
+    # Ej: si n=100 y pct=70, tendremos 70 "por_asignar" y 30 None (que se elegirán al azar)
+    estados_predefinidos = ["por_asignar"] * cantidad_obligatoria_por_asignar
+    estados_predefinidos += [None] * (n - cantidad_obligatoria_por_asignar)
+    
+    # Mezclamos la lista para que las "por_asignar" no queden todas al principio
+    random.shuffle(estados_predefinidos)
+    # ------------------------------------
 
     for i in range(1, n + 1):
-        estado = random.choice(ESTADOS_OT)
+        # Si el estado actual predefinido es None, elegimos uno completamente al azar
+        estado_fijo = estados_predefinidos[i - 1]
+        estado = estado_fijo if estado_fijo is not None else random.choice(ESTADOS_OT)
+        
         tiene_tecnico = estado in estados_con_tecnico
         tiene_fecha = estado not in {"por_revisar", "por_asignar"}
 
@@ -230,29 +235,23 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5)
         fecha_programada = None
         hora_programada = None
         if tiene_fecha:
-            # Mezcla de fechas pasadas y futuras para simular realismo
             offset = random.randint(-7, 14)
             fecha_programada = (hoy + timedelta(days=offset)).isoformat()
             hora_h = random.randint(8, 17)
             hora_m = random.choice([0, 15, 30, 45])
             hora_programada = f"{hora_h:02d}:{hora_m:02d}"
         else:
-            # OT sin fecha: cuenta como sin hora_programada
             sin_hora_count += 1
 
-        # Si ya se alcanzo el maximo de OTs sin hora y esta OT tampoco tiene,
-        # forzamos una hora aunque no tenga fecha previa
         if hora_programada is None and sin_hora_count > max_sin_hora:
             hora_h = random.randint(8, 17)
             hora_m = random.choice([0, 15, 30, 45])
             hora_programada = f"{hora_h:02d}:{hora_m:02d}"
-            # Tambien asignamos una fecha si no tenia
             if fecha_programada is None:
                 offset = random.randint(0, 14)
                 fecha_programada = (hoy + timedelta(days=offset)).isoformat()
 
         orden = {
-            # Formato "OT-XXXX" con padding de ceros a la izquierda
             "id": f"OT-{i:04d}",
             "tipo": random.choice(TIPOS_OT),
             "estado": estado,
@@ -269,7 +268,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5)
 # Generamos los datos al arrancar la aplicacion (base de datos en memoria)
 DB_TECNICOS = generar_tecnicos(n=20)
 DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
-DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=50)
+DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=100)
 
 
 # =============================================================================
