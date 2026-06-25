@@ -1,0 +1,834 @@
+{
+  "Arica y Parinacota": [
+    {
+      "lugar": "Municipalidad de Arica",
+      "direccion": "Sotomayor 415",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Catedral de San Marcos",
+      "direccion": "San Marcos 490",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Terminal de Buses Arica",
+      "direccion": "Diego Portales 948",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Mall Plaza Arica",
+      "direccion": "Diego Portales 640",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Hospital Juan Noé Crevani",
+      "direccion": "18 de Septiembre 1000",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Universidad de Tarapacá (Campus Saucache)",
+      "direccion": "Avenida 18 de Septiembre 2222",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Plaza Colón",
+      "direccion": "Arturo Prat 300",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Museo Histórico y de Armas Moro de Arica",
+      "direccion": "Camino Al Morro S/N",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Gobernación Marítima de Arica",
+      "direccion": "Maximo Lira 315",
+      "comuna": "Arica"
+    },
+    {
+      "lugar": "Sence Arica y Parinacota",
+      "direccion": "Paseo 21 de Mayo 423",
+      "comuna": "Arica"
+    }
+  ],
+  "Tarapacá": [
+    {
+      "lugar": "Municipalidad de Iquique",
+      "direccion": "Ignacio Serrano 134",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Mall Plaza Iquique",
+      "direccion": "Avenida Héroes de la Concepción 2555",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Zofri (Mall Zofri)",
+      "direccion": "Avenida San Román S/N",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Hospital Ernesto Torres Galdames",
+      "direccion": "Avenida Arturo Prat 1500",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Teatro Municipal de Iquique",
+      "direccion": "Eleuterio Ramírez 550",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Casino Dreams Iquique",
+      "direccion": "Avenida Arturo Prat 1601",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Terminal Rodoviario Iquique",
+      "direccion": "Patricio Lynch 50",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Palacio Astoreca",
+      "direccion": "Bernardo O'Higgins 350",
+      "comuna": "Iquique"
+    },
+    {
+      "lugar": "Municipalidad de Alto Hospicio",
+      "direccion": "Avenida Los Álamos 4355",
+      "comuna": "Alto Hospicio"
+    },
+    {
+      "lugar": "Sede Universidad Arturo Prat",
+      "direccion": "Avenida Arturo Prat 2120",
+      "comuna": "Iquique"
+    }
+  ],
+  "Antofagasta": [
+    {
+      "lugar": "Municipalidad de Antofagasta",
+      "direccion": "Avenida Séptimo de Línea 3505",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Mallplaza Antofagasta",
+      "direccion": "Avenida Balmaceda 2355",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Hospital Regional de Antofagasta",
+      "direccion": "Avenida Azolas 3201",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Catedral de Antofagasta",
+      "direccion": "San Martín 2426",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Terminal de Buses Cardenal Carlos Oviedo",
+      "direccion": "Avenida Pedro Aguirre Cerda 5750",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Universidad de Antofagasta (Campus Coloso)",
+      "direccion": "Avenida Universidad de Antofagasta 02800",
+      "comuna": "Antofagasta"
+    },
+    {
+      "lugar": "Municipalidad de Calama",
+      "direccion": "Latorre 1695",
+      "comuna": "Calama"
+    },
+    {
+      "lugar": "Mall Plaza Calama",
+      "direccion": "Avenida Balmaceda 3242",
+      "comuna": "Calama"
+    },
+    {
+      "lugar": "Hospital Carlos Cisternas",
+      "direccion": "Avenida Chorrillos 1731",
+      "comuna": "Calama"
+    },
+    {
+      "lugar": "Casino Marina del Sol Calama",
+      "direccion": "Avenida Balmaceda 3401",
+      "comuna": "Calama"
+    }
+  ],
+  "Atacama": [
+    {
+      "lugar": "Municipalidad de Copiapó",
+      "direccion": "Chañarcillo 751",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Mallplaza Copiapó",
+      "direccion": "Avenida Maipú 110",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Hospital Regional de Copiapó",
+      "direccion": "Los Carrera 1290",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Universidad de Atacama",
+      "direccion": "Avenida Copayapu 485",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Terminal de Buses Copiapó",
+      "direccion": "Chañarcillo 680",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Catedral de Copiapó",
+      "direccion": "Chañarcillo 521",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Municipalidad de Vallenar",
+      "direccion": "Plaza O'Higgins 25",
+      "comuna": "Vallenar"
+    },
+    {
+      "lugar": "Hospital Provincial del Huasco",
+      "direccion": "Avenida el Jilguero S/N",
+      "comuna": "Vallenar"
+    },
+    {
+      "lugar": "Gobernación Provincial de Copiapó",
+      "direccion": "Los Carrera 645",
+      "comuna": "Copiapó"
+    },
+    {
+      "lugar": "Museo Regional de Atacama",
+      "direccion": "Atacama 98",
+      "comuna": "Copiapó"
+    }
+  ],
+  "Coquimbo": [
+    {
+      "lugar": "Municipalidad de La Serena",
+      "direccion": "Arturo Prat 451",
+      "comuna": "La Serena"
+    },
+    {
+      "lugar": "Mallplaza La Serena",
+      "direccion": "Avenida Alberto Solari 1400",
+      "comuna": "La Serena"
+    },
+    {
+      "lugar": "Terminal de Buses La Serena",
+      "direccion": "Avenida Amunátegui 107",
+      "comuna": "La Serena"
+    },
+    {
+      "lugar": "Hospital San Juan de Dios La Serena",
+      "direccion": "Balmaceda 912",
+      "comuna": "La Serena"
+    },
+    {
+      "lugar": "Universidad de La Serena (Campus Andrés Bello)",
+      "direccion": "Avenida Raúl Bitrán 1305",
+      "comuna": "La Serena"
+    },
+    {
+      "lugar": "Municipalidad de Coquimbo",
+      "direccion": "Bilbao 348",
+      "comuna": "Coquimbo"
+    },
+    {
+      "lugar": "Mall Vivo Coquimbo",
+      "direccion": "Varela 1524",
+      "comuna": "Coquimbo"
+    },
+    {
+      "lugar": "Hospital San Pablo de Coquimbo",
+      "direccion": "Doctor Moukarzel 50",
+      "comuna": "Coquimbo"
+    },
+    {
+      "lugar": "Municipalidad de Ovalle",
+      "direccion": "Vicuña Mackenna 441",
+      "comuna": "Ovalle"
+    },
+    {
+      "lugar": "Terminal de Buses Ovalle",
+      "direccion": "Ariztía Oriente 429",
+      "comuna": "Ovalle"
+    }
+  ],
+  "Valparaíso": [
+    {
+      "lugar": "Municipalidad de Valparaíso",
+      "direccion": "Condell 1490",
+      "comuna": "Valparaíso"
+    },
+    {
+      "lugar": "Congreso Nacional de Chile",
+      "direccion": "Avenida Pedro Montt 1730",
+      "comuna": "Valparaíso"
+    },
+    {
+      "lugar": "Terminal Rodoviario de Valparaíso",
+      "direccion": "Pedro Montt 2855",
+      "comuna": "Valparaíso"
+    },
+    {
+      "lugar": "Municipalidad de Viña del Mar",
+      "direccion": "Arlegui 615",
+      "comuna": "Viña del Mar"
+    },
+    {
+      "lugar": "Mall Marina Arauco",
+      "direccion": "Avenida Libertad 1348",
+      "comuna": "Viña del Mar"
+    },
+    {
+      "lugar": "Hospital Dr. Gustavo Fricke",
+      "direccion": "Avenida Álvarez 1532",
+      "comuna": "Viña del Mar"
+    },
+    {
+      "lugar": "Quinta Vergara",
+      "direccion": "Errázuriz 563",
+      "comuna": "Viña del Mar"
+    },
+    {
+      "lugar": "Municipalidad de Quilpué",
+      "direccion": "Vicente Martínez 129",
+      "comuna": "Quilpué"
+    },
+    {
+      "lugar": "Mall Plaza del Sol Quilpué",
+      "direccion": "Avenida Diego Portales 822",
+      "comuna": "Quilpué"
+    },
+    {
+      "lugar": "Municipalidad de Villa Alemana",
+      "direccion": "Santiago 675",
+      "comuna": "Villa Alemana"
+    }
+  ],
+  "Metropolitana de Santiago": [
+    {
+      "lugar": "Palacio de La Moneda",
+      "direccion": "Moneda S/N",
+      "comuna": "Santiago"
+    },
+    {
+      "lugar": "Municipalidad de Santiago",
+      "direccion": "Plaza de Armas S/N",
+      "comuna": "Santiago"
+    },
+    {
+      "lugar": "Costanera Center",
+      "direccion": "Avenida Andrés Bello 2425",
+      "comuna": "Providencia"
+    },
+    {
+      "lugar": "Terminal Alameda (Tur Bus)",
+      "direccion": "Avenida Libertador Bernardo O'Higgins 3750",
+      "comuna": "Estación Central"
+    },
+    {
+      "lugar": "Hospital Clínico Universidad de Chile",
+      "direccion": "Avenida Santos Dumont 999",
+      "comuna": "Independencia"
+    },
+    {
+      "lugar": "Mallplaza Vespucio",
+      "direccion": "Avenida Vicuña Mackenna 7110",
+      "comuna": "La Florida"
+    },
+    {
+      "lugar": "Parque Arauco",
+      "direccion": "Avenida Kennedy 5413",
+      "comuna": "Las Condes"
+    },
+    {
+      "lugar": "Movistar Arena",
+      "direccion": "Tupper S/N",
+      "comuna": "Santiago"
+    },
+    {
+      "lugar": "Estadio Nacional",
+      "direccion": "Avenida Grecia 2001",
+      "comuna": "Ñuñoa"
+    },
+    {
+      "lugar": "Biblioteca Nacional de Chile",
+      "direccion": "Avenida Libertador Bernardo O'Higgins 651",
+      "comuna": "Santiago"
+    }
+  ],
+  "Libertador General Bernardo O'Higgins": [
+    {
+      "lugar": "Municipalidad de Rancagua",
+      "direccion": "Plaza de Los Héroes 445",
+      "comuna": "Rancagua"
+    },
+    {
+      "lugar": "Mallplaza América Rancagua",
+      "direccion": "Avenida Libertador Bernardo O'Higgins 201",
+      "comuna": "Rancagua"
+    },
+    {
+      "lugar": "Hospital Regional de Rancagua",
+      "direccion": "Avenida Libertador Bernardo O'Higgins 3065",
+      "comuna": "Rancagua"
+    },
+    {
+      "lugar": "Terminal O'Higgins Rancagua",
+      "direccion": "Avenida Bornand 30",
+      "comuna": "Rancagua"
+    },
+    {
+      "lugar": "Universidad de O'Higgins (Campus Rancagua)",
+      "direccion": "Avenida Libertador Bernardo O'Higgins 611",
+      "comuna": "Rancagua"
+    },
+    {
+      "lugar": "Municipalidad de San Fernando",
+      "direccion": "Carampangue 865",
+      "comuna": "San Fernando"
+    },
+    {
+      "lugar": "Hospital San Juan de Dios de San Fernando",
+      "direccion": "Carelmapu 2",
+      "comuna": "San Fernando"
+    },
+    {
+      "lugar": "Municipalidad de Santa Cruz",
+      "direccion": "Plaza de Armas 242",
+      "comuna": "Santa Cruz"
+    },
+    {
+      "lugar": "Casino Colchagua",
+      "direccion": "Avenida Errázuriz 501",
+      "comuna": "Santa Cruz"
+    },
+    {
+      "lugar": "Municipalidad de Pichilemu",
+      "direccion": "Ángel Gaete 365",
+      "comuna": "Pichilemu"
+    }
+  ],
+  "Maule": [
+    {
+      "lugar": "Municipalidad de Talca",
+      "direccion": "1 Oriente 920",
+      "comuna": "Talca"
+    },
+    {
+      "lugar": "Mall Plaza Maule",
+      "direccion": "Avenida San Miguel 2440",
+      "comuna": "Talca"
+    },
+    {
+      "lugar": "Hospital Regional de Talca",
+      "direccion": "1 Norte 1990",
+      "comuna": "Talca"
+    },
+    {
+      "lugar": "Terminal de Buses de Talca",
+      "direccion": "12 Oriente 870",
+      "comuna": "Talca"
+    },
+    {
+      "lugar": "Universidad de Talca (Campus Lircay)",
+      "direccion": "Avenida Lircay S/N",
+      "comuna": "Talca"
+    },
+    {
+      "lugar": "Municipalidad de Curicó",
+      "direccion": "Estado 279",
+      "comuna": "Curicó"
+    },
+    {
+      "lugar": "Mall Valle Curicó",
+      "direccion": "Prat 455",
+      "comuna": "Curicó"
+    },
+    {
+      "lugar": "Hospital San Juan de Dios de Curicó",
+      "direccion": "Chacabuco 121",
+      "comuna": "Curicó"
+    },
+    {
+      "lugar": "Municipalidad de Linares",
+      "direccion": "Manuel Rodríguez 580",
+      "comuna": "Linares"
+    },
+    {
+      "lugar": "Terminal de Buses Linares",
+      "direccion": "Januario Espinoza 520",
+      "comuna": "Linares"
+    }
+  ],
+  "Ñuble": [
+    {
+      "lugar": "Municipalidad de Chillán",
+      "direccion": "18 de Septiembre 510",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Mall Arauco Chillán",
+      "direccion": "El Roble 770",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Hospital Clínico Herminda Martín",
+      "direccion": "Avenida Francisco Salazar 1175",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Terminal de Buses María Teresa",
+      "direccion": "Avenida O'Higgins 10",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Catedral de Chillán",
+      "direccion": "Constitución 551",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Universidad del Bío-Bío (Campus Fernando May)",
+      "direccion": "Avenida Andrés Bello 720",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Municipalidad de San Carlos",
+      "direccion": "Vicente Méndez 420",
+      "comuna": "San Carlos"
+    },
+    {
+      "lugar": "Hospital de San Carlos",
+      "direccion": "Avenida Gazmuri 432",
+      "comuna": "San Carlos"
+    },
+    {
+      "lugar": "Gobernación Regional de Ñuble",
+      "direccion": "Avenida Libertad S/N",
+      "comuna": "Chillán"
+    },
+    {
+      "lugar": "Mercado Municipal de Chillán",
+      "direccion": "Maipón 630",
+      "comuna": "Chillán"
+    }
+  ],
+  "Bío Bío": [
+    {
+      "lugar": "Municipalidad de Concepción",
+      "direccion": "O'Higgins 525",
+      "comuna": "Concepción"
+    },
+    {
+      "lugar": "Mallplaza Trébol",
+      "direccion": "Avenida Jorge Alessandri Rodríguez 3177",
+      "comuna": "Talcahuano"
+    },
+    {
+      "lugar": "Hospital Guillermo Grant Benavente",
+      "direccion": "San Martín 1436",
+      "comuna": "Concepción"
+    },
+    {
+      "lugar": "Terminal de Buses Collao",
+      "direccion": "Tegualda 860",
+      "comuna": "Concepción"
+    },
+    {
+      "lugar": "Universidad de Concepción (Campus Central)",
+      "direccion": "Avenida Víctor Lamas 1290",
+      "comuna": "Concepción"
+    },
+    {
+      "lugar": "Municipalidad de Talcahuano",
+      "direccion": "Aníbal Pinto 230",
+      "comuna": "Talcahuano"
+    },
+    {
+      "lugar": "Municipalidad de Los Ángeles",
+      "direccion": "Caupolicán 399",
+      "comuna": "Los Ángeles"
+    },
+    {
+      "lugar": "Mall Plaza Los Ángeles",
+      "direccion": "Avenida Alemania 250",
+      "comuna": "Los Ángeles"
+    },
+    {
+      "lugar": "Hospital Dr. Víctor Ríos Ruiz",
+      "direccion": "Avenida Ricardo Vicuña 147",
+      "comuna": "Los Ángeles"
+    },
+    {
+      "lugar": "Terminal Rodoviario Los Ángeles",
+      "direccion": "Sor Vicenta 2051",
+      "comuna": "Los Ángeles"
+    }
+  ],
+  "La Araucanía": [
+    {
+      "lugar": "Municipalidad de Temuco",
+      "direccion": "Prat 650",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Mallplaza Portal Temuco",
+      "direccion": "Avenida Alemania 0671",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Hospital Dr. Hernán Henríquez Aravena",
+      "direccion": "Manuel Montt 115",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Terminal Rodoviario de Temuco",
+      "direccion": "Vicente Pérez Rosales 01609",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Universidad de La Frontera",
+      "direccion": "Avenida Francisco Salazar 01145",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Mercado Municipal de Temuco",
+      "direccion": "Manuel Rodríguez 921",
+      "comuna": "Temuco"
+    },
+    {
+      "lugar": "Municipalidad de Angol",
+      "direccion": "Pedro de Oña 501",
+      "comuna": "Angol"
+    },
+    {
+      "lugar": "Hospital de Angol",
+      "direccion": "Ilabaca 320",
+      "comuna": "Angol"
+    },
+    {
+      "lugar": "Municipalidad de Pucón",
+      "direccion": "Avenida Bernardo O'Higgins 483",
+      "comuna": "Pucón"
+    },
+    {
+      "lugar": "Grand Casino Pucón",
+      "direccion": "Miguel Ansorena 121",
+      "comuna": "Pucón"
+    }
+  ],
+  "Los Ríos": [
+    {
+      "lugar": "Municipalidad de Valdivia",
+      "direccion": "Independencia 555",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Mall Plaza de Los Ríos",
+      "direccion": "Avenida Arauco 561",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Hospital Base Valdivia",
+      "direccion": "Avenida Bueras 1003",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Terminal de Buses de Valdivia",
+      "direccion": "Anfión Muñoz 360",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Universidad Austral de Chile (Campus Isla Teja)",
+      "direccion": "Avenida Rector Eduardo Morales S/N",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Casino Dreams Valdivia",
+      "direccion": "Carampangue 190",
+      "comuna": "Valdivia"
+    },
+    {
+      "lugar": "Municipalidad de La Unión",
+      "direccion": "Arturo Prat 680",
+      "comuna": "La Unión"
+    },
+    {
+      "lugar": "Hospital de La Unión",
+      "direccion": "Riquelme 511",
+      "comuna": "La Unión"
+    },
+    {
+      "lugar": "Municipalidad de Río Bueno",
+      "direccion": "Comercio 535",
+      "comuna": "Río Bueno"
+    },
+    {
+      "lugar": "Centro Cultural Espacio Sur",
+      "direccion": "General Lagos 1107",
+      "comuna": "Valdivia"
+    }
+  ],
+  "Los Lagos": [
+    {
+      "lugar": "Municipalidad de Puerto Montt",
+      "direccion": "San Felipe 80",
+      "comuna": "Puerto Montt"
+    },
+    {
+      "lugar": "Mall Paseo Costanera",
+      "direccion": "Avenida Juan Soler Manfredini 101",
+      "comuna": "Puerto Montt"
+    },
+    {
+      "lugar": "Hospital Dr. Eduardo Schütz Schroeder",
+      "direccion": "Ruta 5 Sur S/N",
+      "comuna": "Puerto Montt"
+    },
+    {
+      "lugar": "Terminal de Buses de Puerto Montt",
+      "direccion": "Avenida Diego Portales 1001",
+      "comuna": "Puerto Montt"
+    },
+    {
+      "lugar": "Municipalidad de Osorno",
+      "direccion": "Mackenna 851",
+      "comuna": "Osorno"
+    },
+    {
+      "lugar": "Hospital Base de Osorno",
+      "direccion": "Avenida Guillermo Bühler 1765",
+      "comuna": "Osorno"
+    },
+    {
+      "lugar": "Terminal de Buses de Osorno",
+      "direccion": "Errázuriz 1400",
+      "comuna": "Osorno"
+    },
+    {
+      "lugar": "Municipalidad de Castro",
+      "direccion": "Blanco Encalada 273",
+      "comuna": "Castro"
+    },
+    {
+      "lugar": "Hospital de Castro",
+      "direccion": "Avenida Galvarino Riveros 751",
+      "comuna": "Castro"
+    },
+    {
+      "lugar": "Mall Paseo Chiloé",
+      "direccion": "Serrano 420",
+      "comuna": "Castro"
+    }
+  ],
+  "Aisén del General Carlos Ibáñez del Campo": [
+    {
+      "lugar": "Municipalidad de Coyhaique",
+      "direccion": "Francisco Bilbao 357",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Hospital Regional de Coyhaique",
+      "direccion": "Jorge Burgos 99",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Terminal de Buses Coyhaique",
+      "direccion": "Lautaro 109",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Plaza de Armas de Coyhaique",
+      "direccion": "Condell S/N",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Municipalidad de Puerto Aisén",
+      "direccion": "Esmeralda 611",
+      "comuna": "Puerto Aisén"
+    },
+    {
+      "lugar": "Hospital de Puerto Aisén",
+      "direccion": "Ribera Sur S/N",
+      "comuna": "Puerto Aisén"
+    },
+    {
+      "lugar": "Gobernación Regional de Aysén",
+      "direccion": "Ejército 405",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Centro Cultural de Coyhaique",
+      "direccion": "Eusebio Lillo 23",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Museo Regional de Aysén",
+      "direccion": "Km 3 Camino a Nueva Imperial S/N",
+      "comuna": "Coyhaique"
+    },
+    {
+      "lugar": "Catedral de Coyhaique",
+      "direccion": "Avenida General Baquedano 440",
+      "comuna": "Coyhaique"
+    }
+  ],
+  "Magallanes y de la Antártica Chilena": [
+    {
+      "lugar": "Municipalidad de Punta Arenas",
+      "direccion": "Plaza Muñoz Gamero 745",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Zona Franca Punta Arenas (ZonAustral)",
+      "direccion": "Avenida Bulnes Km 3.5 Norte S/N",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Hospital Clínico de Magallanes",
+      "direccion": "Avenida Los Flamencos 01364",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Terminal de Buses Fernández",
+      "direccion": "Armando Sanhueza 745",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Casino Dreams Punta Arenas",
+      "direccion": "Avenida Bernardo O'Higgins 1235",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Universidad de Magallanes",
+      "direccion": "Avenida Bulnes 01855",
+      "comuna": "Punta Arenas"
+    },
+    {
+      "lugar": "Municipalidad de Puerto Natales",
+      "direccion": "Carlos Bories 398",
+      "comuna": "Puerto Natales"
+    },
+    {
+      "lugar": "Hospital de Puerto Natales",
+      "direccion": "Avenida España 1650",
+      "comuna": "Puerto Natales"
+    },
+    {
+      "lugar": "Rodoviario Puerto Natales",
+      "direccion": "Avenida España 1455",
+      "comuna": "Puerto Natales"
+    },
+    {
+      "lugar": "Museo Regional de Magallanes",
+      "direccion": "Hernando de Magallanes 949",
+      "comuna": "Punta Arenas"
+    }
+  ]
+}
