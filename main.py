@@ -209,7 +209,7 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     return disponibilidades
 
 
-def generar_ordenes_trabajo(tecnicos: list, n: int = 40, max_sin_hora: int = 5, min_por_asignar_pct: int = 25) -> list:
+def generar_ordenes_trabajo(tecnicos: list, n: int = 40, max_sin_hora: int = 2, min_por_asignar_pct: int = 30) -> list:
     """
     Genera una lista de ordenes de trabajo con datos ficticios.
     Garantiza que al menos el porcentaje indicado tenga el estado 'por_asignar'.
@@ -229,7 +229,7 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 40, max_sin_hora: int = 5, 
 
     # --- NUEVA LÓGICA DE RESTRICCIÓN ---
     # Calculamos cuántas OTs DEBEN ser "por_asignar" de manera obligatoria
-    cantidad_obligatoria_por_asignar = int(n * (min_por_asignar_pct / 100))
+    cantidad_obligatoria_por_asignar = int(min_por_asignar_pct)
     
     # Creamos una lista con los estados fijos que usaremos para cada iteración
     # Ej: si n=100 y pct=70, tendremos 70 "por_asignar" y 30 None (que se elegirán al azar)
