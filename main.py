@@ -6,6 +6,8 @@
 #   Simula los endpoints externos de un sistema de backoffice que alimenta
 #   un servicio de optimizacion de rutas. Todos los datos son ficticios y
 #   se generan en memoria al iniciar el servidor.
+#   Las Ordenes de Trabajo (OTs) se cargan desde el archivo
+#   ordenes_de_trabajo.json en lugar de generarse aleatoriamente.
 #
 # INSTALACION DE DEPENDENCIAS:
 #   pip install fastapi uvicorn faker
@@ -103,23 +105,22 @@ COMUNAS_CHILE: list[str] = sorted(
 )
 
 
-def generar_direccion() -> str:
-    """
-    Selecciona aleatoriamente una entrada del JSON de direcciones reales
-    y retorna la direccion formateada como 'direccion, comuna'.
-    """
-    entrada = random.choice(DIRECCIONES_CHILE)
-    return f"{entrada['direccion']}, {entrada['comuna']}"
+# =============================================================================
+# CARGA DE ORDENES DE TRABAJO DESDE JSON
+# Archivo: ordenes_de_trabajo.json
+# =============================================================================
 
+_ORDENES_PATH = Path(__file__).parent / "ordenes_de_trabajo.json"
 
-
+with _ORDENES_PATH.open(encoding="utf-8") as _f:
+    DB_ORDENES: list[dict] = json.load(_f)
 
 
 # =============================================================================
 # GENERACION DE LA BASE DE DATOS EN MEMORIA
 # =============================================================================
 
-def generar_tecnicos(n: int = 50) -> list:
+def generar_tecnicos(n: int = 20) -> list:
     """
     Genera una lista de tecnicos con datos ficticios.
 
@@ -129,8 +130,12 @@ def generar_tecnicos(n: int = 50) -> list:
     Returns:
         Lista de diccionarios representando tecnicos.
     """
-    # 1. Filtramos las comunas permitidas usando la variable global `_raw`
-    regiones_internos = ["Coquimbo", "Valparaíso", "Libertador General Bernardo O'Higgins"]
+    # Filtramos las comunas permitidas para tecnicos internos
+    regiones_internos = [
+        "Coquimbo",
+        "Valparaíso",
+        "Libertador General Bernardo O'Higgins",
+    ]
     comunas_internos = list({
         entrada["comuna"]
         for region in regiones_internos
@@ -141,8 +146,7 @@ def generar_tecnicos(n: int = 50) -> list:
     tecnicos = []
     for _ in range(n):
         tipo_tecnico = random.choice(TIPOS_TECNICO)
-        
-        # 2. Aplicamos la restricción
+
         if tipo_tecnico == "interno":
             zona_seleccionada = random.choice(comunas_internos)
         else:
@@ -174,7 +178,7 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     disponibilidades = []
     hoy = date.today()
 
-    # Determinamos cuales tecnicos podran quedar sin disponibilidad (maximo max_sin_disponibilidad)
+    # Determinamos cuales tecnicos podran quedar sin disponibilidad
     n_sin_disp = random.randint(0, max_sin_disponibilidad)
     ids_sin_disponibilidad = set(
         t["id"] for t in random.sample(tecnicos, n_sin_disp)
@@ -188,13 +192,11 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
             es_fin_de_semana = fecha.weekday() >= 5  # 5=Sabado, 6=Domingo
             prob_disponible = 0.3 if es_fin_de_semana else 0.8
 
-            # Si el tecnico esta en el grupo sin disponibilidad, siempre False
             if tecnico_sin_disp:
                 disponible = False
             else:
                 disponible = random.random() < prob_disponible
                 # Garantizamos que al menos el primer dia laboral sea disponible
-                # para que no quede sin ningun dia por azar
                 if not disponible and offset == 0 and not es_fin_de_semana:
                     disponible = True
 
@@ -209,83 +211,35 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     return disponibilidades
 
 
-def generar_ordenes_trabajo(tecnicos: list, n: int = 40, max_sin_hora: int = 2, min_por_asignar_pct: int = 30) -> list:
-    """
-    Genera una lista de ordenes de trabajo con datos ficticios.
-    Garantiza que al menos el porcentaje indicado tenga el estado 'por_asignar'.
-    """
-    estados_con_tecnico = {
-        "asignacion_por_confirmar",
-        "asignada",
-        "en_terreno",
-        "finalizada",
-        "enviada_cobranza",
-    }
-    
-    ordenes = []
-    hoy = date.today()
-    ids_tecnicos = [t["id"] for t in tecnicos]
-    sin_hora_count = 0  
+# =============================================================================
+# INICIALIZACION DE LA BASE DE DATOS EN MEMORIA
+# =============================================================================
 
-    # --- NUEVA LÓGICA DE RESTRICCIÓN ---
-    # Calculamos cuántas OTs DEBEN ser "por_asignar" de manera obligatoria
-    cantidad_obligatoria_por_asignar = int(min_por_asignar_pct)
-    
-    # Creamos una lista con los estados fijos que usaremos para cada iteración
-    # Ej: si n=100 y pct=70, tendremos 70 "por_asignar" y 30 None (que se elegirán al azar)
-    estados_predefinidos = ["por_asignar"] * cantidad_obligatoria_por_asignar
-    estados_predefinidos += [None] * (n - cantidad_obligatoria_por_asignar)
-    
-    # Mezclamos la lista para que las "por_asignar" no queden todas al principio
-    random.shuffle(estados_predefinidos)
-    # ------------------------------------
-
-    for i in range(1, n + 1):
-        # Si el estado actual predefinido es None, elegimos uno completamente al azar
-        estado_fijo = estados_predefinidos[i - 1]
-        estado = estado_fijo if estado_fijo is not None else random.choice(ESTADOS_OT)
-        
-        tiene_tecnico = estado in estados_con_tecnico
-        tiene_fecha = estado not in {"por_revisar", "por_asignar"}
-
-        # Generamos fecha programada solo si el estado lo amerita
-        fecha_programada = None
-        hora_programada = None
-        if tiene_fecha:
-            offset = random.randint(-7, 14)
-            fecha_programada = (hoy + timedelta(days=offset)).isoformat()
-            hora_h = random.randint(8, 17)
-            hora_m = random.choice([0, 15, 30, 45])
-            hora_programada = f"{hora_h:02d}:{hora_m:02d}"
-        else:
-            sin_hora_count += 1
-
-        if hora_programada is None and sin_hora_count > max_sin_hora:
-            hora_h = random.randint(8, 17)
-            hora_m = random.choice([0, 15, 30, 45])
-            hora_programada = f"{hora_h:02d}:{hora_m:02d}"
-            if fecha_programada is None:
-                offset = random.randint(0, 14)
-                fecha_programada = (hoy + timedelta(days=offset)).isoformat()
-
-        orden = {
-            "id": f"OT-{i:04d}",
-            "tipo": random.choice(TIPOS_OT),
-            "estado": estado,
-            "tecnico_id": random.choice(ids_tecnicos) if tiene_tecnico else None,
-            "direccion_instalacion": generar_direccion(),
-            "fecha_programada": fecha_programada,
-            "hora_programada": hora_programada,
-        }
-        ordenes.append(orden)
-
-    return ordenes
-
-
-# Generamos los datos al arrancar la aplicacion (base de datos en memoria)
+# 1. Generamos los tecnicos aleatorios
 DB_TECNICOS = generar_tecnicos(n=20)
+
+# 2. Extraemos los tecnico_id referenciados en las OTs del JSON que NO existen
+#    en DB_TECNICOS, y creamos registros de tecnico para ellos. Esto garantiza
+#    que la validacion del endpoint PATCH /ordenes/{id}/tecnico siempre sea
+#    consistente con los datos del JSON.
+ids_tecnicos_existentes = {t["id"] for t in DB_TECNICOS}
+ids_tecnicos_en_ots = {
+    ot["tecnico_id"]
+    for ot in DB_ORDENES
+    if ot.get("tecnico_id") is not None
+}
+
+for tecnico_id_faltante in ids_tecnicos_en_ots - ids_tecnicos_existentes:
+    DB_TECNICOS.append({
+        "id": tecnico_id_faltante,
+        "nombre": fake.first_name(),
+        "apellidos": f"{fake.last_name()} {fake.last_name()}",
+        "tipo": random.choice(TIPOS_TECNICO),
+        "zona": random.choice(COMUNAS_CHILE),
+    })
+
+# 3. Generamos disponibilidades para todos los tecnicos (incluidos los del JSON)
 DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
-DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=40)
 
 
 # =============================================================================
@@ -336,7 +290,7 @@ def get_tecnicos():
     - **nombre**: Nombre del tecnico
     - **apellidos**: Apellidos del tecnico
     - **tipo**: interno o externo
-    - **zona**: Zona de Santiago asignada al tecnico
+    - **zona**: Zona asignada al tecnico
     """
     return DB_TECNICOS
 
@@ -362,6 +316,7 @@ def get_ordenes(
 ):
     """
     Retorna la lista de ordenes de trabajo (OTs) del sistema.
+    Las OTs se cargan desde el archivo ordenes_de_trabajo.json.
 
     Acepta un query parameter opcional **estado** para filtrar los resultados:
     - Sin `estado`: retorna todas las OTs.
@@ -375,15 +330,14 @@ def get_ordenes(
     - **tipo**: Tipo de servicio (instalacion_simple, instalacion_con_corte, mantencion, retiro)
     - **estado**: Estado actual del flujo de trabajo
     - **tecnico_id**: UUID del tecnico asignado (puede ser null)
-    - **direccion_instalacion**: Direccion del trabajo en Santiago, Chile
+    - **direccion_instalacion**: Direccion del trabajo
     - **fecha_programada**: Fecha en formato ISO 8601 (puede ser null)
     - **hora_programada**: Hora en formato HH:MM (puede ser null)
     """
     if estado is None:
-        # Sin filtro: devolvemos todas las OTs
         return DB_ORDENES
 
-    # Validamos que el estado sea uno de los valores permitidos por el enum
+    # Validamos que el estado sea uno de los valores permitidos
     if estado not in ESTADOS_OT:
         raise HTTPException(
             status_code=422,
@@ -393,7 +347,6 @@ def get_ordenes(
             ),
         )
 
-    # Filtramos las OTs por el estado indicado
     return [o for o in DB_ORDENES if o["estado"] == estado]
 
 
@@ -470,7 +423,6 @@ def get_disponibilidad(
     - **disponible**: true si el tecnico esta disponible ese dia, false si no
     """
     if fecha is None:
-        # Sin filtro: devolvemos todas las disponibilidades
         return DB_DISPONIBILIDADES
 
     # Validamos que el parametro tenga el formato correcto
@@ -485,7 +437,4 @@ def get_disponibilidad(
             ),
         )
 
-    # Filtramos por la fecha indicada
-    resultado = [d for d in DB_DISPONIBILIDADES if d["fecha"] == fecha]
-
-    return resultado
+    return [d for d in DB_DISPONIBILIDADES if d["fecha"] == fecha]
