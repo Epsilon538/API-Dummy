@@ -192,7 +192,7 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     return disponibilidades
 
 
-def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5, min_por_asignar_pct: int = 70) -> list:
+def generar_ordenes_trabajo(tecnicos: list, n: int = 40, max_sin_hora: int = 5, min_por_asignar_pct: int = 25) -> list:
     """
     Genera una lista de ordenes de trabajo con datos ficticios.
     Garantiza que al menos el porcentaje indicado tenga el estado 'por_asignar'.
@@ -266,9 +266,9 @@ def generar_ordenes_trabajo(tecnicos: list, n: int = 100, max_sin_hora: int = 5,
 
 
 # Generamos los datos al arrancar la aplicacion (base de datos en memoria)
-DB_TECNICOS = generar_tecnicos(n=50)
+DB_TECNICOS = generar_tecnicos(n=20)
 DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
-DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=100)
+DB_ORDENES = generar_ordenes_trabajo(DB_TECNICOS, n=40)
 
 
 # =============================================================================
