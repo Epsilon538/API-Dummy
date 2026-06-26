@@ -129,14 +129,31 @@ def generar_tecnicos(n: int = 50) -> list:
     Returns:
         Lista de diccionarios representando tecnicos.
     """
+    # 1. Filtramos las comunas permitidas usando la variable global `_raw`
+    regiones_internos = ["Coquimbo", "Valparaíso", "Libertador General Bernardo O'Higgins"]
+    comunas_internos = list({
+        entrada["comuna"]
+        for region in regiones_internos
+        if region in _raw
+        for entrada in _raw[region]
+    })
+
     tecnicos = []
     for _ in range(n):
+        tipo_tecnico = random.choice(TIPOS_TECNICO)
+        
+        # 2. Aplicamos la restricción
+        if tipo_tecnico == "interno":
+            zona_seleccionada = random.choice(comunas_internos)
+        else:
+            zona_seleccionada = random.choice(COMUNAS_CHILE)
+
         tecnico = {
             "id": str(uuid.uuid4()),
             "nombre": fake.first_name(),
             "apellidos": f"{fake.last_name()} {fake.last_name()}",
-            "tipo": random.choice(TIPOS_TECNICO),
-            "zona": random.choice(COMUNAS_CHILE),
+            "tipo": tipo_tecnico,
+            "zona": zona_seleccionada,
         }
         tecnicos.append(tecnico)
     return tecnicos
