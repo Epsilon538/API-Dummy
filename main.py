@@ -295,8 +295,42 @@ def root():
             "GET  /api/ordenes",
             "PATCH /api/ordenes/{id}/tecnico",
             "GET  /api/disponibilidad",
+            "POST /api/reset",
         ],
     }
+
+
+# --- Reset ---
+
+@app.post(
+    "/api/reset",
+    tags=["Admin"],
+    summary="Reiniciar y regenerar todos los datos",
+    response_description="Confirmacion del reset con conteo de registros generados.",
+)
+def reset():
+    """
+    Regenera en memoria todos los datos de la API:
+    tecnicos, ordenes de trabajo y disponibilidades.
+
+    Util para volver al estado inicial tras asignaciones u otras
+    modificaciones realizadas durante la sesion.
+
+    Retorna un resumen con la cantidad de registros generados.
+    """
+    global DB_TECNICOS, DB_ORDENES, DB_DISPONIBILIDADES
+
+    DB_TECNICOS = generar_tecnicos()
+    DB_ORDENES = generar_ordenes()
+    DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
+
+    return {
+        "mensaje": "Reset completado. Todos los datos han sido regenerados.",
+        "tecnicos": len(DB_TECNICOS),
+        "ordenes": len(DB_ORDENES),
+        "disponibilidades": len(DB_DISPONIBILIDADES),
+    }
+
 
 
 # --- Tecnicos ---
