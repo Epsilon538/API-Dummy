@@ -62,6 +62,13 @@ app.add_middleware(
 # ENUMS Y CONSTANTES
 # =============================================================================
 
+# Regiones habilitadas para técnicos y órdenes de trabajo
+REGIONES_OBJETIVO = [
+    "Metropolitana de Santiago",
+    "Valparaíso",
+    "Libertador General Bernardo O'Higgins",
+]
+
 TIPOS_TECNICO = ["interno", "externo"]
 
 TIPOS_OT = [
@@ -105,61 +112,48 @@ COMUNAS_CHILE: list[str] = sorted(
 )
 
 
-# =============================================================================
-# CARGA DE ORDENES DE TRABAJO DESDE JSON
-# Archivo: ordenes_de_trabajo.json
-# =============================================================================
 
-_ORDENES_PATH = Path(__file__).parent / "ordenes_de_trabajo.json"
-
-with _ORDENES_PATH.open(encoding="utf-8") as _f:
-    DB_ORDENES: list[dict] = json.load(_f)
 
 
 # =============================================================================
 # GENERACION DE LA BASE DE DATOS EN MEMORIA
 # =============================================================================
 
-def generar_tecnicos(n: int = 20) -> list:
+def generar_tecnicos() -> list:
     """
-    Genera una lista de tecnicos con datos ficticios.
+    Genera la lista fija de tecnicos agrupados por region y tipo:
+      - 4 internos en Region de Valparaiso
+      - 3 externos en Region de Valparaiso
+      - 3 externos en Region Metropolitana de Santiago
+      - 3 externos en Region del Libertador General Bernardo O'Higgins
 
-    Args:
-        n: Numero de tecnicos a generar.
+    La zona de cada tecnico se asigna a una comuna perteneciente
+    a su region de disponibilidad.
 
     Returns:
         Lista de diccionarios representando tecnicos.
     """
-    # Filtramos las comunas permitidas para tecnicos internos
-    regiones_internos = [
-        "Coquimbo",
-        "Valparaíso",
-        "Libertador General Bernardo O'Higgins",
+    # Definicion fija de grupos: (tipo, clave_region_en_json, cantidad)
+    GRUPOS_TECNICOS = [
+        ("interno", "Valparaíso",                                    4),
+        ("externo", "Valparaíso",                                    3),
+        ("externo", "Metropolitana de Santiago",                     3),
+        ("externo", "Libertador General Bernardo O'Higgins",         3),
     ]
-    comunas_internos = list({
-        entrada["comuna"]
-        for region in regiones_internos
-        if region in _raw
-        for entrada in _raw[region]
-    })
 
     tecnicos = []
-    for _ in range(n):
-        tipo_tecnico = random.choice(TIPOS_TECNICO)
-
-        if tipo_tecnico == "interno":
-            zona_seleccionada = random.choice(comunas_internos)
-        else:
-            zona_seleccionada = random.choice(COMUNAS_CHILE)
-
-        tecnico = {
-            "id": str(uuid.uuid4()),
-            "nombre": fake.first_name(),
-            "apellidos": f"{fake.last_name()} {fake.last_name()}",
-            "tipo": tipo_tecnico,
-            "zona": zona_seleccionada,
-        }
-        tecnicos.append(tecnico)
+    for tipo, region_key, cantidad in GRUPOS_TECNICOS:
+        comunas_region = [e["comuna"] for e in _raw.get(region_key, [])]
+        for _ in range(cantidad):
+            tecnico = {
+                "id": str(uuid.uuid4()),
+                "nombre": fake.first_name(),
+                "apellidos": f"{fake.last_name()} {fake.last_name()}",
+                "tipo": tipo,
+                "zona": random.choice(comunas_region),
+                "region": region_key,
+            }
+            tecnicos.append(tecnico)
     return tecnicos
 
 
@@ -211,35 +205,67 @@ def generar_disponibilidades(tecnicos: list, dias: int = 14, max_sin_disponibili
     return disponibilidades
 
 
+def generar_ordenes() -> list:
+    """
+    Genera las ordenes de trabajo en memoria usando las direcciones reales
+    del archivo direcciones_reales_chile.json.
+
+    Distribucion fija:
+      - 8 OTs en Region de Valparaiso
+      - 5 OTs en Region Metropolitana de Santiago
+      - 5 OTs en Region del Libertador General Bernardo O'Higgins
+
+    Todas las OTs se crean con estado 'por_asignar' y sin tecnico asignado.
+
+    Returns:
+        Lista de diccionarios representando ordenes de trabajo.
+    """
+    GRUPOS_ORDENES = [
+        ("Valparaíso",                                  8),
+        ("Metropolitana de Santiago",                   5),
+        ("Libertador General Bernardo O'Higgins",       5),
+    ]
+
+    ordenes = []
+    contador = 1
+
+    for region_key, cantidad in GRUPOS_ORDENES:
+        pool = _raw.get(region_key, [])
+        # Seleccionamos 'cantidad' direcciones sin repeticion (el pool siempre es suficiente)
+        seleccionadas = random.sample(pool, cantidad)
+
+        for entrada in seleccionadas:
+            ot = {
+                "id": f"OT-{contador:04d}",
+                "tipo": random.choice(TIPOS_OT),
+                "estado": "por_asignar",
+                "tecnico_id": None,
+                "direccion_instalacion": entrada["direccion"],
+                "comuna": entrada["comuna"],
+                "region": region_key,
+                "fecha_programada": None,
+                "hora_programada": None,
+            }
+            ordenes.append(ot)
+            contador += 1
+
+    return ordenes
+
+
+
 # =============================================================================
 # INICIALIZACION DE LA BASE DE DATOS EN MEMORIA
 # =============================================================================
 
-# 1. Generamos los tecnicos aleatorios
-DB_TECNICOS = generar_tecnicos(n=20)
+# 1. Generamos los tecnicos fijos por region
+DB_TECNICOS = generar_tecnicos()
 
-# 2. Extraemos los tecnico_id referenciados en las OTs del JSON que NO existen
-#    en DB_TECNICOS, y creamos registros de tecnico para ellos. Esto garantiza
-#    que la validacion del endpoint PATCH /ordenes/{id}/tecnico siempre sea
-#    consistente con los datos del JSON.
-ids_tecnicos_existentes = {t["id"] for t in DB_TECNICOS}
-ids_tecnicos_en_ots = {
-    ot["tecnico_id"]
-    for ot in DB_ORDENES
-    if ot.get("tecnico_id") is not None
-}
+# 2. Generamos las OTs desde las direcciones reales del JSON
+DB_ORDENES: list[dict] = generar_ordenes()
 
-for tecnico_id_faltante in ids_tecnicos_en_ots - ids_tecnicos_existentes:
-    DB_TECNICOS.append({
-        "id": tecnico_id_faltante,
-        "nombre": fake.first_name(),
-        "apellidos": f"{fake.last_name()} {fake.last_name()}",
-        "tipo": random.choice(TIPOS_TECNICO),
-        "zona": random.choice(COMUNAS_CHILE),
-    })
-
-# 3. Generamos disponibilidades para todos los tecnicos (incluidos los del JSON)
+# 3. Generamos disponibilidades para los 13 tecnicos (14 dias)
 DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
+
 
 
 # =============================================================================
