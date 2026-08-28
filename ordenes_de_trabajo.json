@@ -4,7 +4,7 @@
     "tipo": "instalacion_simple",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "18 de Septiembre 510, Chillán",
+    "direccion_instalacion": "Avenida Andrés Bello 2425, Costanera Center",
     "fecha_programada": null,
     "hora_programada": null
   },
@@ -13,7 +13,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "finalizada",
     "tecnico_id": "c666cebe-c0bb-467f-ac97-8610178c1402",
-    "direccion_instalacion": "Arturo Prat 300, Arica",
+    "direccion_instalacion": "Avenida Andrés Bello 2425, Costanera Center",
     "fecha_programada": "2026-06-23",
     "hora_programada": "11:15"
   },
@@ -22,7 +22,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Grecia 2001, Ñuñoa",
+    "direccion_instalacion": "Errázuriz 563, Quinta Vergara",
     "fecha_programada": "2026-07-08",
     "hora_programada": "13:45"
   },
@@ -31,7 +31,7 @@
     "tipo": "retiro",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Januario Espinoza 520, Linares",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 651, Biblioteca Nacional de Chile",
     "fecha_programada": "2026-07-09",
     "hora_programada": "11:15"
   },
@@ -40,7 +40,7 @@
     "tipo": "instalacion_simple",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Ariztía Oriente 429, Ovalle",
+    "direccion_instalacion": "Avenida Álvarez 1532, Hospital Dr. Gustavo Fricke",
     "fecha_programada": "2026-06-29",
     "hora_programada": "12:15"
   },
@@ -49,7 +49,7 @@
     "tipo": "instalacion_simple",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 201, Rancagua",
+    "direccion_instalacion": "Vicente Martínez 129, Municipalidad de Quilpué",
     "fecha_programada": "2026-06-30",
     "hora_programada": "14:30"
   },
@@ -58,7 +58,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "en_terreno",
     "tecnico_id": "b807a96d-9049-4922-8772-531c8002d3c7",
-    "direccion_instalacion": "Avenida Héroes de la Concepción 2555, Iquique",
+    "direccion_instalacion": "Vicente Martínez 129, Municipalidad de Quilpué",
     "fecha_programada": "2026-07-05",
     "hora_programada": "09:45"
   },
@@ -67,7 +67,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida O'Higgins 10, Chillán",
+    "direccion_instalacion": "Avenida Libertad 1348, Mall Marina Arauco",
     "fecha_programada": "2026-07-04",
     "hora_programada": "14:00"
   },
@@ -76,7 +76,7 @@
     "tipo": "mantencion",
     "estado": "asignacion_por_confirmar",
     "tecnico_id": "c666cebe-c0bb-467f-ac97-8610178c1402",
-    "direccion_instalacion": "12 Oriente 870, Talca",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 611, Universidad de O'Higgins (Campus Rancagua)",
     "fecha_programada": "2026-07-10",
     "hora_programada": "09:30"
   },
@@ -85,7 +85,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Ariztía Oriente 429, Ovalle",
+    "direccion_instalacion": "Pedro Montt 2855, Terminal Rodoviario de Valparaíso",
     "fecha_programada": "2026-07-04",
     "hora_programada": "14:30"
   },
@@ -94,7 +94,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida España 1650, Puerto Natales",
+    "direccion_instalacion": "Avenida Diego Portales 822, Mall Plaza del Sol Quilpué",
     "fecha_programada": "2026-07-06",
     "hora_programada": "14:45"
   },
@@ -103,7 +103,7 @@
     "tipo": "mantencion",
     "estado": "en_terreno",
     "tecnico_id": "cf5e4720-684d-420e-a099-7d7944cf4010",
-    "direccion_instalacion": "Arlegui 615, Viña del Mar",
+    "direccion_instalacion": "Avenida Bornand 30, Terminal O'Higgins Rancagua",
     "fecha_programada": "2026-06-28",
     "hora_programada": "14:00"
   },
@@ -112,7 +112,7 @@
     "tipo": "retiro",
     "estado": "asignada",
     "tecnico_id": "6fc0e542-3941-4069-a36b-78991eddad58",
-    "direccion_instalacion": "Vicente Pérez Rosales 01609, Temuco",
+    "direccion_instalacion": "Avenida Andrés Bello 2425, Costanera Center",
     "fecha_programada": "2026-07-07",
     "hora_programada": "17:30"
   },
@@ -121,7 +121,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "finalizada",
     "tecnico_id": "808a2f16-37db-49af-870a-e0e7c578ec5c",
-    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 3065, Rancagua",
+    "direccion_instalacion": "Avenida Kennedy 5413, Parque Arauco",
     "fecha_programada": "2026-06-25",
     "hora_programada": "16:45"
   },
@@ -130,7 +130,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Ángel Gaete 365, Pichilemu",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 201, Mallplaza América Rancagua",
     "fecha_programada": "2026-06-27",
     "hora_programada": "16:30"
   },
@@ -139,7 +139,7 @@
     "tipo": "instalacion_simple",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Héroes de la Concepción 2555, Iquique",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 3065, Hospital Regional de Rancagua",
     "fecha_programada": "2026-06-28",
     "hora_programada": "11:15"
   },
@@ -148,7 +148,7 @@
     "tipo": "retiro",
     "estado": "asignada",
     "tecnico_id": "205a6f78-8f1c-4fd2-9ade-662ea0e3ae5c",
-    "direccion_instalacion": "San Martín 1436, Concepción",
+    "direccion_instalacion": "Tupper S/N, Movistar Arena",
     "fecha_programada": "2026-07-09",
     "hora_programada": "17:15"
   },
@@ -157,7 +157,7 @@
     "tipo": "retiro",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida San Román S/N, Iquique",
+    "direccion_instalacion": "Pedro Montt 2855, Terminal Rodoviario de Valparaíso",
     "fecha_programada": "2026-06-28",
     "hora_programada": "14:15"
   },
@@ -166,7 +166,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "en_terreno",
     "tecnico_id": "6fc0e542-3941-4069-a36b-78991eddad58",
-    "direccion_instalacion": "Avenida Guillermo Bühler 1765, Osorno",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 651, Biblioteca Nacional de Chile",
     "fecha_programada": "2026-06-26",
     "hora_programada": "09:45"
   },
@@ -175,7 +175,7 @@
     "tipo": "retiro",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Carlos Bories 398, Puerto Natales",
+    "direccion_instalacion": "Avenida Vicuña Mackenna 7110, Mallplaza Vespucio",
     "fecha_programada": "2026-07-08",
     "hora_programada": "16:30"
   },
@@ -184,7 +184,7 @@
     "tipo": "retiro",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Arturo Prat 451, La Serena",
+    "direccion_instalacion": "Errázuriz 563, Quinta Vergara",
     "fecha_programada": "2026-07-09",
     "hora_programada": "16:45"
   },
@@ -193,7 +193,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Plaza de Los Héroes 445, Rancagua",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 3750, Terminal Alameda (Tur Bus)",
     "fecha_programada": "2026-06-30",
     "hora_programada": "15:45"
   },
@@ -202,7 +202,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Plaza de Los Héroes 445, Rancagua",
+    "direccion_instalacion": "Avenida Bornand 30, Terminal O'Higgins Rancagua",
     "fecha_programada": "2026-07-06",
     "hora_programada": "16:45"
   },
@@ -211,7 +211,7 @@
     "tipo": "mantencion",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Moneda S/N, Santiago",
+    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 651, Biblioteca Nacional de Chile",
     "fecha_programada": "2026-07-07",
     "hora_programada": "15:00"
   },
@@ -220,7 +220,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Libertad 1348, Viña del Mar",
+    "direccion_instalacion": "Avenida Grecia 2001, Estadio Nacional",
     "fecha_programada": "2026-07-02",
     "hora_programada": "10:15"
   },
@@ -229,7 +229,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Alemania 250, Los Ángeles",
+    "direccion_instalacion": "Errázuriz 563, Quinta Vergara",
     "fecha_programada": "2026-06-26",
     "hora_programada": "15:45"
   },
@@ -238,7 +238,7 @@
     "tipo": "retiro",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Alemania 250, Los Ángeles",
+    "direccion_instalacion": "Carampangue 865, Municipalidad de San Fernando",
     "fecha_programada": "2026-06-30",
     "hora_programada": "08:30"
   },
@@ -247,7 +247,7 @@
     "tipo": "instalacion_con_corte",
     "estado": "por_asignar",
     "tecnico_id": null,
-    "direccion_instalacion": "Avenida Libertador Bernardo O'Higgins 651, Santiago",
+    "direccion_instalacion": "Avenida Errázuriz 501, Casino Colchagua",
     "fecha_programada": "2026-07-03",
     "hora_programada": "16:15"
   },
@@ -256,7 +256,7 @@
     "tipo": "mantencion",
     "estado": "asignada",
     "tecnico_id": "83acfd96-3520-4fd1-ab15-4a8a2482fbf0",
-    "direccion_instalacion": "Avenida Amunátegui 107, La Serena",
+    "direccion_instalacion": "Carampangue 865, Municipalidad de San Fernando",
     "fecha_programada": "2026-07-04",
     "hora_programada": "08:45"
   }
