@@ -333,6 +333,20 @@ def reset():
     }
 
 
+@app.get(
+    "/api/reset",
+    tags=["Admin"],
+    summary="Reiniciar y regenerar todos los datos (GET)",
+    response_description="Confirmacion del reset con conteo de registros generados.",
+)
+def reset_get():
+    """
+    Identico a POST /api/reset pero accesible via GET,
+    para poder dispararlo directamente desde el navegador o herramientas externas.
+    """
+    return reset()
+
+
 
 # --- Tecnicos ---
 
