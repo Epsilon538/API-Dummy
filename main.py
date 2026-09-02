@@ -235,6 +235,7 @@ def generar_ordenes() -> list:
         seleccionadas = random.sample(pool, cantidad)
 
         for entrada in seleccionadas:
+            hora_aleatoria = random.randint(9, 17)
             ot = {
                 "id": f"OT-{contador:04d}",
                 "tipo": random.choice(TIPOS_OT),
@@ -243,8 +244,8 @@ def generar_ordenes() -> list:
                 "direccion_instalacion": entrada["direccion"],
                 "comuna": entrada["comuna"],
                 "region": region_key,
-                "fecha_programada": None,
-                "hora_programada": None,
+                "fecha_programada": date.today().isoformat(),
+                "hora_programada": f"{hora_aleatoria:02d}:00",
             }
             ordenes.append(ot)
             contador += 1
