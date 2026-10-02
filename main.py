@@ -573,6 +573,9 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
                 ),
             )
 
+    # Guardamos el tecnico anterior antes de actualizar (para el historial en BD)
+    tecnico_anterior = orden.get("tecnico_id")
+
     # Actualizamos la OT en memoria
     orden["tecnico_id"] = body.tecnico_id
 
@@ -580,7 +583,7 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
     if orden["estado"] in ("por_revisar", "por_asignar"):
         orden["estado"] = "asignacion_por_confirmar"
 
-    # --- Persistir en PostgreSQL ---
+    # --- Persistir en PostgreSQL (cada asignacion/reprogramacion es un evento nuevo) ---
     guardado_en_bd = False
     db_error = None
     conn = None
@@ -588,60 +591,45 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Verificar si ya existe una fila para esta OT
-        cur.execute(
-            "SELECT id FROM asignacion WHERE id_orden_trabajo = %s",
-            (id,),
+        # Construir fecha_orden_de_trabajo desde los datos de la OT
+        fecha_ot = None
+        if orden.get("fecha_programada") and orden.get("hora_programada"):
+            hora = orden["hora_programada"]
+            if hora.count(":") == 1:
+                hora += ":00"
+            fecha_ot = f"{orden['fecha_programada']}T{hora}"
+
+        # Determinar tipo de evento segun si hay motivo de reprogramacion
+        es_reprogramacion = body.motivo_reprogramacion is not None
+        tipo_modificacion = (
+            "reprogramacion_individual" if es_reprogramacion
+            else "asignacion_individual"
         )
-        fila_existente = cur.fetchone()
 
-        if fila_existente:
-            # UPDATE: reprogramacion de una asignacion existente
-            cur.execute(
-                """
-                UPDATE asignacion
-                SET id_aceptada = %s,
-                    motivo_reprogramacion = %s,
-                    fecha_asignacion = NOW(),
-                    propuesta_modificada = true,
-                    tipo_modificacion = 'reprogramacion_individual'
-                WHERE id_orden_trabajo = %s
-                """,
-                (body.tecnico_id, body.motivo_reprogramacion, id),
+        # INSERT: siempre una fila nueva (historial de eventos, nunca se sobrescribe)
+        cur.execute(
+            """
+            INSERT INTO asignacion (
+                id_orden_trabajo, id_propuesta, id_aceptada,
+                fecha_asignacion, fecha_orden_de_trabajo,
+                motivo_reprogramacion, usuario_dispatcher,
+                fecha_generacion, propuesta_modificada,
+                tipo_modificacion
+            ) VALUES (
+                %s, %s, %s, NOW(), %s, %s, %s, NOW(), %s, %s
             )
-        else:
-            # INSERT: primera asignacion via PATCH (no hubo POST previo)
-            fecha_ot = None
-            if orden.get("fecha_programada") and orden.get("hora_programada"):
-                hora = orden["hora_programada"]
-                if hora.count(":") == 1:
-                    hora += ":00"
-                fecha_ot = f"{orden['fecha_programada']}T{hora}"
-
-            cur.execute(
-                """
-                INSERT INTO asignacion (
-                    id_orden_trabajo, id_propuesta, id_aceptada,
-                    fecha_asignacion, fecha_orden_de_trabajo,
-                    motivo_reprogramacion, usuario_dispatcher,
-                    fecha_generacion, propuesta_modificada,
-                    tipo_modificacion
-                ) VALUES (
-                    %s, %s, %s, NOW(), %s, %s, %s, NOW(), %s, %s
-                )
-                """,
-                (
-                    id,
-                    body.tecnico_id,   # id_propuesta = mismo tecnico (asignacion directa)
-                    body.tecnico_id,   # id_aceptada
-                    fecha_ot,
-                    body.motivo_reprogramacion,
-                    None,              # usuario_dispatcher (no viene en PATCH)
-                    body.motivo_reprogramacion is not None,  # propuesta_modificada
-                    "asignacion_individual" if body.motivo_reprogramacion is None
-                    else "reprogramacion_individual",
-                ),
-            )
+            """,
+            (
+                id,
+                tecnico_anterior,      # id_propuesta = tecnico que tenia la OT antes
+                body.tecnico_id,       # id_aceptada  = tecnico nuevo
+                fecha_ot,
+                body.motivo_reprogramacion,
+                None,                  # usuario_dispatcher (no viene en PATCH)
+                es_reprogramacion,     # propuesta_modificada
+                tipo_modificacion,
+            ),
+        )
 
         conn.commit()
         guardado_en_bd = True
