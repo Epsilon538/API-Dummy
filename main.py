@@ -237,7 +237,7 @@ def generar_ordenes() -> list:
         seleccionadas = random.sample(pool, cantidad)
 
         for entrada in seleccionadas:
-            hora_aleatoria = random.randint(9, 17)
+            hora_aleatoria = random.randint(12, 20)
             ot = {
                 "id": f"OT-{contador:04d}",
                 "tipo": random.choice(TIPOS_OT),
