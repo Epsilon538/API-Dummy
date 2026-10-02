@@ -90,6 +90,18 @@ ESTADOS_OT = [
     "enviada_cobranza",
 ]
 
+MOTIVOS_REPROGRAMACION = [
+    "Cliente No Disponible",
+    "Falta de Coordinación",
+    "Técnico No Disponible",
+    "Falta de Tiempo",
+    "Problema de Ruta",
+    "Problema Técnico",
+    "Dirección Incorrecta",
+    "Cliente Solicitó Cambio",
+    "Otro",
+]
+
 # =============================================================================
 # CARGA DE DIRECCIONES REALES DESDE JSON
 # Archivo: direcciones_reales_chile.json
@@ -278,6 +290,7 @@ DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
 class AsignarTecnicoRequest(BaseModel):
     """Body esperado para el endpoint PATCH /ordenes/{id}/tecnico."""
     tecnico_id: str
+    motivo_reprogramacion: Optional[str] = None
 
 
 class RevisadoPor(BaseModel):
@@ -514,15 +527,24 @@ def get_ordenes(
 )
 def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
     """
-    Simula la asignacion de un tecnico a una orden de trabajo especifica.
+    Asigna (o reasigna) un tecnico a una orden de trabajo especifica
+    y persiste el cambio en la base de datos PostgreSQL.
 
     - Busca la OT por su id (ej: OT-0001).
     - Valida que el tecnico_id del body corresponda a un tecnico existente.
+    - Si se envia motivo_reprogramacion, lo valida contra los valores permitidos.
     - Actualiza la OT en memoria con el nuevo tecnico_id.
     - Cambia el estado de la OT a asignacion_por_confirmar si estaba pendiente.
-    - Retorna la OT actualizada.
+    - Persiste en PostgreSQL:
+        - Si ya existe una fila en asignacion para esa OT, la actualiza.
+        - Si no existe, inserta una fila nueva.
+    - Retorna la OT actualizada junto con el estado de la persistencia.
 
-    Body esperado: {"tecnico_id": "uuid-del-tecnico"}
+    Body esperado:
+    {
+        "tecnico_id": "uuid-del-tecnico",
+        "motivo_reprogramacion": "texto del motivo" (opcional)
+    }
     """
     # Buscamos la OT por id
     orden = next((o for o in DB_ORDENES if o["id"] == id), None)
@@ -540,6 +562,17 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
             detail=f"Tecnico con id '{body.tecnico_id}' no encontrado.",
         )
 
+    # Validamos motivo_reprogramacion contra los valores del CHECK constraint
+    if body.motivo_reprogramacion is not None:
+        if body.motivo_reprogramacion not in MOTIVOS_REPROGRAMACION:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"El motivo '{body.motivo_reprogramacion}' no es valido. "
+                    f"Valores permitidos: {', '.join(MOTIVOS_REPROGRAMACION)}"
+                ),
+            )
+
     # Actualizamos la OT en memoria
     orden["tecnico_id"] = body.tecnico_id
 
@@ -547,7 +580,91 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
     if orden["estado"] in ("por_revisar", "por_asignar"):
         orden["estado"] = "asignacion_por_confirmar"
 
-    return orden
+    # --- Persistir en PostgreSQL ---
+    guardado_en_bd = False
+    db_error = None
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Verificar si ya existe una fila para esta OT
+        cur.execute(
+            "SELECT id FROM asignacion WHERE id_orden_trabajo = %s",
+            (id,),
+        )
+        fila_existente = cur.fetchone()
+
+        if fila_existente:
+            # UPDATE: reprogramacion de una asignacion existente
+            cur.execute(
+                """
+                UPDATE asignacion
+                SET id_aceptada = %s,
+                    motivo_reprogramacion = %s,
+                    fecha_asignacion = NOW(),
+                    propuesta_modificada = true,
+                    tipo_modificacion = 'reprogramacion_individual'
+                WHERE id_orden_trabajo = %s
+                """,
+                (body.tecnico_id, body.motivo_reprogramacion, id),
+            )
+        else:
+            # INSERT: primera asignacion via PATCH (no hubo POST previo)
+            fecha_ot = None
+            if orden.get("fecha_programada") and orden.get("hora_programada"):
+                hora = orden["hora_programada"]
+                if hora.count(":") == 1:
+                    hora += ":00"
+                fecha_ot = f"{orden['fecha_programada']}T{hora}"
+
+            cur.execute(
+                """
+                INSERT INTO asignacion (
+                    id_orden_trabajo, id_propuesta, id_aceptada,
+                    fecha_asignacion, fecha_orden_de_trabajo,
+                    motivo_reprogramacion, usuario_dispatcher,
+                    fecha_generacion, propuesta_modificada,
+                    tipo_modificacion
+                ) VALUES (
+                    %s, %s, %s, NOW(), %s, %s, %s, NOW(), %s, %s
+                )
+                """,
+                (
+                    id,
+                    body.tecnico_id,   # id_propuesta = mismo tecnico (asignacion directa)
+                    body.tecnico_id,   # id_aceptada
+                    fecha_ot,
+                    body.motivo_reprogramacion,
+                    None,              # usuario_dispatcher (no viene en PATCH)
+                    body.motivo_reprogramacion is not None,  # propuesta_modificada
+                    "asignacion_individual" if body.motivo_reprogramacion is None
+                    else "reprogramacion_individual",
+                ),
+            )
+
+        conn.commit()
+        guardado_en_bd = True
+        cur.close()
+    except Exception as e:
+        db_error = str(e)
+        if conn:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+    finally:
+        if conn:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    respuesta = {**orden, "guardado_en_bd": guardado_en_bd}
+    if db_error:
+        respuesta["db_error"] = db_error
+
+    return respuesta
 
 
 # --- Asignacion Masiva de Tecnicos ---
