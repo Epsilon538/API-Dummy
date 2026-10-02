@@ -102,6 +102,12 @@ MOTIVOS_REPROGRAMACION = [
     "Otro",
 ]
 
+TIPOS_MODIFICACION_PATCH = [
+    "OT asignada a otro técnico",
+    "OT reordenada",
+    "OT descartada",
+]
+
 # =============================================================================
 # CARGA DE DIRECCIONES REALES DESDE JSON
 # Archivo: direcciones_reales_chile.json
@@ -287,17 +293,24 @@ DB_DISPONIBILIDADES = generar_disponibilidades(DB_TECNICOS, dias=14)
 # MODELOS PYDANTIC (para validacion de request/response bodies)
 # =============================================================================
 
-class AsignarTecnicoRequest(BaseModel):
-    """Body esperado para el endpoint PATCH /ordenes/{id}/tecnico."""
-    tecnico_id: str
-    motivo_reprogramacion: Optional[str] = None
-
-
 class RevisadoPor(BaseModel):
     """Informacion del usuario que reviso la propuesta de asignacion."""
     usuario_id: str
     nombre: str
     rol: str
+
+
+class AsignarTecnicoRequest(BaseModel):
+    """
+    Body esperado para el endpoint PATCH /ordenes/{id}/tecnico.
+
+    tecnico_id puede ser null para el caso 'OT descartada'
+    (se saca de un tecnico y queda sin asignar).
+    """
+    tecnico_id: Optional[str] = None
+    motivo_reprogramacion: Optional[str] = None
+    revisado_por: Optional[RevisadoPor] = None
+    tipo_modificacion: Optional[str] = None
 
 
 class ResumenCorrida(BaseModel):
@@ -522,28 +535,27 @@ def get_ordenes(
 @app.patch(
     "/api/ordenes/{id}/tecnico",
     tags=["Ordenes de Trabajo"],
-    summary="Asignar tecnico a una orden de trabajo",
-    response_description="La orden de trabajo actualizada con el nuevo tecnico asignado.",
+    summary="Asignar o reprogramar tecnico de una orden de trabajo",
+    response_description="La orden de trabajo actualizada con el estado de persistencia en BD.",
 )
 def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
     """
-    Asigna (o reasigna) un tecnico a una orden de trabajo especifica
-    y persiste el cambio en la base de datos PostgreSQL.
+    Asigna, reprograma o descarta la asignacion de un tecnico a una OT.
+    Cada invocacion inserta una fila nueva en la tabla `asignacion` de
+    PostgreSQL (historial de eventos, nunca se sobrescribe).
 
-    - Busca la OT por su id (ej: OT-0001).
-    - Valida que el tecnico_id del body corresponda a un tecnico existente.
-    - Si se envia motivo_reprogramacion, lo valida contra los valores permitidos.
-    - Actualiza la OT en memoria con el nuevo tecnico_id.
-    - Cambia el estado de la OT a asignacion_por_confirmar si estaba pendiente.
-    - Persiste en PostgreSQL:
-        - Si ya existe una fila en asignacion para esa OT, la actualiza.
-        - Si no existe, inserta una fila nueva.
-    - Retorna la OT actualizada junto con el estado de la persistencia.
+    Casos de uso:
+    - **Asignar**: tecnico_id con UUID, sin motivo_reprogramacion.
+    - **Reprogramar**: tecnico_id con UUID nuevo, con motivo_reprogramacion.
+    - **Descartar**: tecnico_id null, con motivo_reprogramacion y
+      tipo_modificacion = "OT descartada". La OT vuelve a estado por_asignar.
 
     Body esperado:
     {
-        "tecnico_id": "uuid-del-tecnico",
-        "motivo_reprogramacion": "texto del motivo" (opcional)
+        "tecnico_id": "uuid-o-null",
+        "motivo_reprogramacion": "texto del motivo",
+        "revisado_por": {"usuario_id": "u1", "nombre": "Camila Soto", "rol": "Coordinadora"},
+        "tipo_modificacion": "OT asignada a otro técnico"
     }
     """
     # Buscamos la OT por id
@@ -554,13 +566,16 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
             detail=f"Orden de trabajo con id '{id}' no encontrada.",
         )
 
-    # Validamos que el tecnico exista en nuestra base de datos en memoria
-    tecnico = next((t for t in DB_TECNICOS if t["id"] == body.tecnico_id), None)
-    if tecnico is None:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Tecnico con id '{body.tecnico_id}' no encontrado.",
+    # Validamos que el tecnico exista (solo si se envia un tecnico_id)
+    if body.tecnico_id is not None:
+        tecnico = next(
+            (t for t in DB_TECNICOS if t["id"] == body.tecnico_id), None
         )
+        if tecnico is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Tecnico con id '{body.tecnico_id}' no encontrado.",
+            )
 
     # Validamos motivo_reprogramacion contra los valores del CHECK constraint
     if body.motivo_reprogramacion is not None:
@@ -573,17 +588,31 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
                 ),
             )
 
+    # Validamos tipo_modificacion contra los valores permitidos
+    if body.tipo_modificacion is not None:
+        if body.tipo_modificacion not in TIPOS_MODIFICACION_PATCH:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"El tipo_modificacion '{body.tipo_modificacion}' no es valido. "
+                    f"Valores permitidos: {', '.join(TIPOS_MODIFICACION_PATCH)}"
+                ),
+            )
+
     # Guardamos el tecnico anterior antes de actualizar (para el historial en BD)
     tecnico_anterior = orden.get("tecnico_id")
 
     # Actualizamos la OT en memoria
     orden["tecnico_id"] = body.tecnico_id
 
-    # Si la OT estaba sin asignar, la movemos al siguiente estado logico
-    if orden["estado"] in ("por_revisar", "por_asignar"):
+    if body.tecnico_id is None:
+        # OT descartada: vuelve a estado por_asignar
+        orden["estado"] = "por_asignar"
+    elif orden["estado"] in ("por_revisar", "por_asignar"):
+        # Asignacion nueva: avanza al siguiente estado logico
         orden["estado"] = "asignacion_por_confirmar"
 
-    # --- Persistir en PostgreSQL (cada asignacion/reprogramacion es un evento nuevo) ---
+    # --- Persistir en PostgreSQL (cada evento es una fila nueva) ---
     guardado_en_bd = False
     db_error = None
     conn = None
@@ -599,12 +628,22 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
                 hora += ":00"
             fecha_ot = f"{orden['fecha_programada']}T{hora}"
 
-        # Determinar tipo de evento segun si hay motivo de reprogramacion
-        es_reprogramacion = body.motivo_reprogramacion is not None
-        tipo_modificacion = (
-            "reprogramacion_individual" if es_reprogramacion
-            else "asignacion_individual"
+        # id_propuesta: tecnico anterior; si no habia, usar el nuevo
+        # (cubre el caso de primera asignacion donde tecnico_anterior es None)
+        id_propuesta = (
+            tecnico_anterior
+            if tecnico_anterior is not None
+            else body.tecnico_id
         )
+
+        # usuario_dispatcher desde revisado_por (si viene)
+        usuario_dispatcher = (
+            body.revisado_por.nombre if body.revisado_por else None
+        )
+
+        # tipo_modificacion y propuesta_modificada
+        es_reprogramacion = body.motivo_reprogramacion is not None
+        tipo_mod = body.tipo_modificacion  # valor directo del frontend
 
         # INSERT: siempre una fila nueva (historial de eventos, nunca se sobrescribe)
         cur.execute(
@@ -621,13 +660,13 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
             """,
             (
                 id,
-                tecnico_anterior,      # id_propuesta = tecnico que tenia la OT antes
-                body.tecnico_id,       # id_aceptada  = tecnico nuevo
+                id_propuesta,              # tecnico anterior (o el nuevo si no habia)
+                body.tecnico_id,           # tecnico nuevo (o null si descartada)
                 fecha_ot,
                 body.motivo_reprogramacion,
-                None,                  # usuario_dispatcher (no viene en PATCH)
-                es_reprogramacion,     # propuesta_modificada
-                tipo_modificacion,
+                usuario_dispatcher,
+                es_reprogramacion,         # propuesta_modificada
+                tipo_mod,
             ),
         )
 
