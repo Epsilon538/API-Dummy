@@ -21,12 +21,14 @@
 # =============================================================================
 
 import json
+import os
 import random
 import uuid
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
+import psycopg2
 from faker import Faker
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -278,6 +280,98 @@ class AsignarTecnicoRequest(BaseModel):
     tecnico_id: str
 
 
+class RevisadoPor(BaseModel):
+    """Informacion del usuario que reviso la propuesta de asignacion."""
+    usuario_id: str
+    nombre: str
+    rol: str
+
+
+class ResumenCorrida(BaseModel):
+    """Resumen estadistico de la corrida de optimizacion."""
+    total_ots: int
+    ots_asignadas: int
+    ots_pendientes: int
+    total_tecnicos: int
+    tecnicos_utilizados: int
+    distancia_total_km: float
+    fuente_matriz: str
+
+
+class ParadaRuta(BaseModel):
+    """Detalle de una parada dentro de la ruta de un tecnico."""
+    ot_id: str
+    secuencia: int
+    tipo: str
+    direccion: str
+    hora_estimada_llegada: str
+    espera_min: int
+
+
+class RutaTecnico(BaseModel):
+    """Ruta asignada a un tecnico, incluyendo propuesta original y version final."""
+    tecnico_id: str
+    tecnico_nombre: str
+    zona_base: str
+    distancia_total_km: float
+    capacidad_uso: str
+    hora_salida_base: str
+    hora_retorno_base: str
+    ruta_propuesta: list[str]
+    ruta_final: list[str]
+    aceptada_sin_modificacion: bool
+    modificaciones: list[dict] = []
+    paradas: list[ParadaRuta]
+
+
+class AsignarTecnicosRequest(BaseModel):
+    """
+    Body esperado para el endpoint POST /api/asignar-tecnicos.
+
+    Representa el resultado de una corrida de optimizacion revisada
+    y aprobada por un dispatcher/coordinador.
+    """
+    fecha_planificacion: str
+    generado_en: str
+    revisado_en: str
+    revisado_por: RevisadoPor
+    resumen_corrida: ResumenCorrida
+    rutas: list[RutaTecnico]
+    pendientes: list[dict] = []
+
+
+# =============================================================================
+# CONEXION A BASE DE DATOS POSTGRESQL (Render)
+# =============================================================================
+
+def get_db_connection():
+    """
+    Crea y retorna una conexion a la base de datos PostgreSQL
+    usando la variable de entorno DATABASE_URL.
+
+    Render entrega URLs con esquema 'postgres://' pero psycopg2
+    requiere 'postgresql://'. Esta funcion hace el reemplazo
+    automaticamente.
+
+    Returns:
+        psycopg2 connection object.
+
+    Raises:
+        ValueError: Si DATABASE_URL no esta configurada.
+    """
+    database_url = os.environ.get("DATABASE_URL")
+    if not database_url:
+        raise ValueError(
+            "La variable de entorno DATABASE_URL no esta configurada. "
+            "Agreguela al archivo .env o como variable de entorno del sistema."
+        )
+    # Render usa 'postgres://' pero psycopg2 espera 'postgresql://'
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+    return psycopg2.connect(database_url)
+
+
 # =============================================================================
 # ENDPOINTS
 # =============================================================================
@@ -294,16 +388,17 @@ def root():
         "endpoints_disponibles": [
             "GET  /api/tecnicos",
             "GET  /api/ordenes",
-            "PATCH /api/ordenes/{id}/tecnico",
+            "GET  /api/reset",
             "GET  /api/disponibilidad",
-            "POST /api/reset",
+            "PATCH /api/ordenes/{id}/tecnico",
+            "POST /api/asignar-tecnicos",
         ],
     }
 
 
 # --- Reset ---
 
-@app.post(
+@app.get(
     "/api/reset",
     tags=["Admin"],
     summary="Reiniciar y regenerar todos los datos",
@@ -331,20 +426,6 @@ def reset():
         "ordenes": len(DB_ORDENES),
         "disponibilidades": len(DB_DISPONIBILIDADES),
     }
-
-
-@app.get(
-    "/api/reset",
-    tags=["Admin"],
-    summary="Reiniciar y regenerar todos los datos (GET)",
-    response_description="Confirmacion del reset con conteo de registros generados.",
-)
-def reset_get():
-    """
-    Identico a POST /api/reset pero accesible via GET,
-    para poder dispararlo directamente desde el navegador o herramientas externas.
-    """
-    return reset()
 
 
 
@@ -467,6 +548,161 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
         orden["estado"] = "asignacion_por_confirmar"
 
     return orden
+
+
+# --- Asignacion Masiva de Tecnicos ---
+
+@app.post(
+    "/api/asignar-tecnicos",
+    tags=["Ordenes de Trabajo"],
+    summary="Asignar tecnicos a OTs de forma masiva desde una corrida de optimizacion",
+    response_description="Resumen de la asignacion con detalle de OTs actualizadas y errores.",
+)
+def asignar_tecnicos_masivo(body: AsignarTecnicosRequest):
+    """
+    Recibe el resultado de una corrida de optimizacion revisada por un
+    dispatcher/coordinador y aplica las asignaciones de tecnicos.
+
+    **Procesamiento por cada ruta recibida:**
+    1. Valida que el tecnico exista en el sistema.
+    2. Para cada OT en `ruta_final`:
+       - Actualiza `tecnico_id` y `estado` en la base de datos en memoria.
+       - Prepara un registro para insertar en la tabla `asignacion` de PostgreSQL.
+    3. Inserta los registros exitosos en la base de datos de Render.
+
+    **Estrategia parcial:** las asignaciones validas se aplican y los errores
+    se reportan sin detener el procesamiento del resto.
+
+    **Body esperado:** JSON con la estructura completa de la corrida
+    (fecha_planificacion, revisado_por, rutas, pendientes, etc.).
+    """
+    actualizadas = []
+    errores = []
+    registros_db = []
+
+    # Mapa de propuestas: ot_id -> tecnico_id que lo tenia en ruta_propuesta
+    propuesta_map: dict[str, str] = {}
+    for ruta in body.rutas:
+        for ot_id in ruta.ruta_propuesta:
+            propuesta_map[ot_id] = ruta.tecnico_id
+
+    # --- Procesar cada ruta ---
+    for ruta in body.rutas:
+        tecnico_id = ruta.tecnico_id
+
+        # Validar que el tecnico exista en la BD en memoria
+        tecnico = next((t for t in DB_TECNICOS if t["id"] == tecnico_id), None)
+        if tecnico is None:
+            for ot_id in ruta.ruta_final:
+                errores.append({
+                    "ot_id": ot_id,
+                    "error": f"Tecnico con id '{tecnico_id}' no encontrado en el sistema.",
+                })
+            continue
+
+        for ot_id in ruta.ruta_final:
+            # Buscar la OT en memoria
+            orden = next((o for o in DB_ORDENES if o["id"] == ot_id), None)
+            if orden is None:
+                errores.append({
+                    "ot_id": ot_id,
+                    "error": f"OT '{ot_id}' no encontrada en el sistema.",
+                })
+                continue
+
+            # Actualizar la OT en memoria
+            orden["tecnico_id"] = tecnico_id
+            if orden["estado"] in ("por_revisar", "por_asignar"):
+                orden["estado"] = "asignacion_por_confirmar"
+
+            actualizadas.append({
+                "ot_id": ot_id,
+                "tecnico_id": tecnico_id,
+                "estado": orden["estado"],
+            })
+
+            # Construir fecha_orden_de_trabajo desde los datos de la OT
+            fecha_ot = None
+            if orden.get("fecha_programada") and orden.get("hora_programada"):
+                hora = orden["hora_programada"]
+                if hora.count(":") == 1:
+                    hora += ":00"
+                fecha_ot = f"{orden['fecha_programada']}T{hora}"
+
+            # Determinar si la propuesta fue modificada y el tipo
+            propuesta_modificada = not ruta.aceptada_sin_modificacion
+            tipo_modificacion = None
+            if ruta.modificaciones:
+                tipo_modificacion = json.dumps(
+                    ruta.modificaciones, ensure_ascii=False
+                )[:100]
+
+            registros_db.append({
+                "id_orden_trabajo": ot_id,
+                "id_propuesta": propuesta_map.get(ot_id),
+                "id_aceptada": tecnico_id,
+                "fecha_asignacion": body.revisado_en,
+                "fecha_orden_de_trabajo": fecha_ot,
+                "motivo_reprogramacion": None,
+                "usuario_dispatcher": body.revisado_por.nombre,
+                "fecha_generacion": body.generado_en,
+                "propuesta_modificada": propuesta_modificada,
+                "tipo_modificacion": tipo_modificacion,
+            })
+
+    # --- Insertar en PostgreSQL ---
+    db_resultado = {"insertados": 0, "error": None}
+    if registros_db:
+        conn = None
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            for reg in registros_db:
+                cur.execute(
+                    """
+                    INSERT INTO asignacion (
+                        id_orden_trabajo, id_propuesta, id_aceptada,
+                        fecha_asignacion, fecha_orden_de_trabajo,
+                        motivo_reprogramacion, usuario_dispatcher,
+                        fecha_generacion, propuesta_modificada,
+                        tipo_modificacion
+                    ) VALUES (
+                        %(id_orden_trabajo)s, %(id_propuesta)s, %(id_aceptada)s,
+                        %(fecha_asignacion)s, %(fecha_orden_de_trabajo)s,
+                        %(motivo_reprogramacion)s, %(usuario_dispatcher)s,
+                        %(fecha_generacion)s, %(propuesta_modificada)s,
+                        %(tipo_modificacion)s
+                    )
+                    """,
+                    reg,
+                )
+            conn.commit()
+            db_resultado["insertados"] = len(registros_db)
+            cur.close()
+        except Exception as e:
+            db_resultado["error"] = str(e)
+            if conn:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+        finally:
+            if conn:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+
+    return {
+        "mensaje": "Asignacion masiva completada.",
+        "fecha_planificacion": body.fecha_planificacion,
+        "revisado_por": body.revisado_por.nombre,
+        "total_recibidas": sum(len(r.ruta_final) for r in body.rutas),
+        "total_actualizadas": len(actualizadas),
+        "actualizadas": actualizadas,
+        "errores": errores,
+        "base_de_datos": db_resultado,
+    }
 
 
 # --- Disponibilidad ---
