@@ -399,6 +399,34 @@ def get_db_connection():
 
 
 # =============================================================================
+# MIGRACIONES DE BASE DE DATOS (se ejecutan al iniciar el servidor)
+# =============================================================================
+
+@app.on_event("startup")
+def ensure_db_schema():
+    """
+    Asegura que la columna id_propuesta de la tabla asignacion sea nullable.
+
+    Esto es necesario porque los eventos de tipo 'OT descartada' no tienen
+    un tecnico propuesto asociado, por lo que id_propuesta debe aceptar NULL.
+    La operacion es idempotente (segura de ejecutar multiples veces).
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "ALTER TABLE asignacion "
+            "ALTER COLUMN id_propuesta DROP NOT NULL"
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception:
+        # La columna ya es nullable, o la BD no esta disponible al iniciar
+        pass
+
+
+# =============================================================================
 # ENDPOINTS
 # =============================================================================
 
@@ -628,13 +656,9 @@ def asignar_tecnico(id: str, body: AsignarTecnicoRequest):
                 hora += ":00"
             fecha_ot = f"{orden['fecha_programada']}T{hora}"
 
-        # id_propuesta: tecnico anterior; si no habia, usar el nuevo
-        # (cubre el caso de primera asignacion donde tecnico_anterior es None)
-        id_propuesta = (
-            tecnico_anterior
-            if tecnico_anterior is not None
-            else body.tecnico_id
-        )
+        # id_propuesta: tecnico que tenia la OT antes del cambio
+        # (puede ser None si la OT nunca fue asignada — la columna es nullable)
+        id_propuesta = tecnico_anterior
 
         # usuario_dispatcher desde revisado_por (si viene)
         usuario_dispatcher = (
