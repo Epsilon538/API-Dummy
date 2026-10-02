@@ -405,24 +405,41 @@ def get_db_connection():
 @app.on_event("startup")
 def ensure_db_schema():
     """
-    Asegura que la columna id_propuesta de la tabla asignacion sea nullable.
+    Asegura que las columnas de la tabla asignacion que dependen de datos
+    del optimizador sean nullable.
 
     Esto es necesario porque los eventos de tipo 'OT descartada' no tienen
-    un tecnico propuesto asociado, por lo que id_propuesta debe aceptar NULL.
-    La operacion es idempotente (segura de ejecutar multiples veces).
+    un tecnico propuesto ni aceptado, y otros campos pueden no aplicar
+    segun el tipo de evento. Solo se mantienen NOT NULL:
+      - id (PK, auto-generado)
+      - propuesta_modificada (boolean con default false, siempre se setea)
+
+    Cada ALTER es idempotente (seguro de ejecutar multiples veces).
     """
+    columnas_nullable = [
+        "id_propuesta",
+        "id_aceptada",
+        "id_orden_trabajo",
+        "fecha_asignacion",
+        "fecha_orden_de_trabajo",
+        "motivo_reprogramacion",
+        "usuario_dispatcher",
+        "fecha_generacion",
+        "tipo_modificacion",
+    ]
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute(
-            "ALTER TABLE asignacion "
-            "ALTER COLUMN id_propuesta DROP NOT NULL"
-        )
+        for columna in columnas_nullable:
+            cur.execute(
+                f"ALTER TABLE asignacion "
+                f"ALTER COLUMN {columna} DROP NOT NULL"
+            )
         conn.commit()
         cur.close()
         conn.close()
     except Exception:
-        # La columna ya es nullable, o la BD no esta disponible al iniciar
+        # Las columnas ya son nullable, o la BD no esta disponible al iniciar
         pass
 
 
